@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Trusted Trade AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-black text-gray-100 font-sans">
+
+    <nav class="p-6 border-b border-gray-800 flex justify-between items-center bg-black/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="text-2xl font-black tracking-tighter text-blue-600">NEXUS<span class="text-white">.AI</span></div>
+        <div class="space-x-8 text-sm uppercase tracking-widest font-bold hidden md:flex">
+            <a href="#" class="text-blue-500">Dashboard</a>
+            <a href="#" class="hover:text-blue-400 transition">Auditoría</a>
+            <a href="#" class="hover:text-blue-400 transition">Soporte</a>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <div class="lg:col-span-8 space-y-6">
+            <div class="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-2xl">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-cart-shopping text-blue-500"></i> Simulación de Operación B2B
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="flex flex-col">
+                        <label class="text-xs text-gray-500 mb-2 ml-1">PRODUCTO / ACTIVO</label>
+                        <input type="text" id="prod" value="Motor Siemens 5HP" class="bg-black border border-gray-700 p-4 rounded-xl text-white focus:border-blue-500 outline-none transition">
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-xs text-gray-500 mb-2 ml-1">VALOR DE TRANSACCIÓN ($)</label>
+                        <input type="number" id="monto" value="5000" class="bg-black border border-gray-700 p-4 rounded-xl text-white outline-none focus:border-blue-500 transition">
+                    </div>
+                </div>
+                <button onclick="iniciarProceso()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all transform active:scale-95 shadow-lg shadow-blue-900/20">
+                    EJECUTAR CONTRATO INTELIGENTE NEXUS
+                </button>
+            </div>
+
+            <div class="bg-black border border-gray-800 rounded-2xl p-6 shadow-inner">
+                <h3 class="text-xs font-bold text-gray-500 mb-4 uppercase tracking-widest italic">Terminal de Eventos en Tiempo Real</h3>
+                <div id="log-container" class="h-64 overflow-y-auto font-mono text-sm text-blue-400 space-y-2">
+                    <p class="text-gray-600">> Sistema Nexus listo. Esperando inicialización...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-4 space-y-6">
+            <div class="bg-blue-900/10 border border-blue-500/30 p-8 rounded-3xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4">
+                    <i class="fa-solid fa-shield-check text-blue-500/20 text-6xl"></i>
+                </div>
+                <h3 class="text-blue-400 font-bold mb-4 tracking-widest text-xs uppercase">Fondos en Escrow</h3>
+                <div class="text-5xl font-black mb-2 text-white">$<span id="display-monto">0</span></div>
+                <p class="text-gray-400 text-xs">Garantizado por Arbitraje IA</p>
+                <div class="mt-6 pt-6 border-t border-blue-500/20">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Comisión Nexus (4%):</span>
+                        <span class="text-green-400 font-bold" id="nexus-fee">$0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 border border-gray-800 p-6 rounded-3xl">
+                <h3 class="text-gray-400 font-bold mb-4 tracking-widest text-xs uppercase">Veredicto IA Judge</h3>
+                <div id="veredicto-ia" class="text-sm text-gray-500 italic p-4 bg-black/50 rounded-xl border border-gray-800">
+                    Sin reclamos activos...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function iniciarProceso() {
+            const log = document.getElementById('log-container');
+            const monto = document.getElementById('monto').value;
+            const fee = document.getElementById('nexus-fee');
+            const dispMonto = document.getElementById('display-monto');
+
+            dispMonto.innerText = monto;
+            fee.innerText = "$" + (monto * 0.04).toFixed(2);
+
+            const pasos = [
+                "<span class='text-yellow-500'>> [STEP 1]</span> Analizando solicitud de contrato...",
+                "<span class='text-blue-500'>> [STEP 2]</span> Generando Legajo Digital PDF...",
+                "<span class='text-blue-500'>> [STEP 3]</span> Sellando con Hash SHA-256: 66b202a5...",
+                "<span class='text-purple-500'>> [STEP 4]</span> Notificando a las partes vía Email...",
+                "<span class='text-green-500'>> [SUCCESS]</span> Fondos capturados en Escrow. Nexus Fee asegurado."
+            ];
+
+            log.innerHTML = "";
+            pasos.forEach((paso, i) => {
+                setTimeout(() => {
+                    log.innerHTML += `<p class='animate-pulse'>${paso}</p>`;
+                    log.scrollTop = log.scrollHeight;
+                }, i * 1200);
+            });
+        }
+    </script>
+</body>
+</html>
