@@ -8,10 +8,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f1f5f9; }
+        body { background-color: #f1f5f9; scroll-behavior: smooth; }
         .tab-active { border-bottom: 3px solid #2563eb; color: #2563eb; }
-        .card-nexus { background: white; border: 1px solid #e2e8f0; transition: all 0.3s; }
-        .card-nexus:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .card-nexus { background: white; border: 1px solid #e2e8f0; transition: all 0.3s ease; overflow: hidden; }
+        .card-nexus:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.07); }
+        /* Animación para simular escritura en Demo */
+        .demo-writing { animation: blink 0.5s step-end infinite; border-right: 2px solid #2563eb; }
+        @keyframes blink { 50% { border-color: transparent; } }
+        /* Imagen de Motor Liviana (SVG inline) */
+        .motor-svg { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%232563eb" d="M352 16h64c8.8 0 16 7.2 16 16v64c0 8.8-7.2 16-16 16h-64c-8.8 0-16-7.2-16-16V32c0-8.8 7.2-16 16-16zM160 16h64c8.8 0 16 7.2 16 16v64c0 8.8-7.2 16-16 16h-64c-8.8 0-16-7.2-16-16V32c0-8.8 7.2-16 16-16zm64 128h64c8.8 0 16 7.2 16 16v64c0 8.8-7.2 16-16 16h-64c-8.8 0-16-7.2-16-16v-64c0-8.8 7.2-16 16-16zm-64 0h-64c-8.8 0-16 7.2-16 16v64c0 8.8 7.2 16 16 16h64c8.8 0 16-7.2 16-16v-64c0-8.8-7.2-16-16-16zm192 128h64c8.8 0 16 7.2 16 16v64c0 8.8-7.2 16-16 16h-64c-8.8 0-16-7.2-16-16v-64c0-8.8 7.2-16 16-16zm-64 0h-64c-8.8 0-16 7.2-16 16v64c0 8.8 7.2 16 16 16h64c8.8 0 16-7.2 16-16v-64c0-8.8-7.2-16-16-16z"/></svg>'); background-repeat: no-repeat; background-position: center; background-size: 60px; }
     </style>
 </head>
 <body class="text-slate-900 font-sans">
@@ -21,96 +26,105 @@
             <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-200">N</div>
             <div class="text-2xl font-black tracking-tighter text-slate-800 uppercase">Nexus<span class="text-blue-600">.Market</span></div>
         </div>
-        <div class="flex gap-4">
-            <button class="bg-slate-100 text-slate-600 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest">Login</button>
-            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest shadow-md">Registro</button>
+        <div class="flex gap-3 items-center">
+            <button onclick="iniciarDemoCompleta()" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest shadow-lg shadow-amber-200 flex items-center gap-2 transition-all active:scale-95">
+                <i class="fa-solid fa-play"></i> Iniciar Modo DEMO
+            </button>
+            <div class="h-8 w-px bg-slate-200 mx-2"></div>
+            <button class="text-slate-500 text-xs font-bold uppercase tracking-widest">Login</button>
+            <button class="bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest shadow-md">Registro</button>
         </div>
     </nav>
 
     <div class="max-w-6xl mx-auto mt-6 flex gap-8 px-6 border-b border-slate-200">
-        <button onclick="switchTab('comprar')" id="tab-comprar" class="tab-active pb-4 font-bold text-sm uppercase tracking-wider">Módulo Comprador</button>
-        <button onclick="switchTab('vender')" id="tab-vender" class="pb-4 font-bold text-sm uppercase tracking-wider text-slate-400">Módulo Vendedor</button>
+        <button onclick="switchTab('comprar')" id="tab-comprar" class="tab-active pb-4 font-bold text-sm uppercase tracking-wider transition-all">Módulo Comprador</button>
+        <button onclick="switchTab('vender')" id="tab-vender" class="pb-4 font-bold text-sm uppercase tracking-wider text-slate-400 transition-all">Módulo Vendedor</button>
     </div>
 
-    <main class="max-w-6xl mx-auto p-6">
+    <main class="max-w-6xl mx-auto p-6 pb-20">
         
         <div id="view-comprar" class="space-y-8">
             <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input type="text" placeholder="Buscar productos (ej: Motor Siemens, Transformador 10kVA...)" class="w-full p-6 pl-14 rounded-2xl border-none shadow-xl text-lg outline-none focus:ring-4 focus:ring-blue-100 transition">
+                <i class="fa-solid fa-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
+                <input type="text" id="main-search" placeholder="Buscar productos (ej: Motor Siemens, Transformador...)" class="w-full p-6 pl-16 rounded-2xl border-none shadow-xl text-lg outline-none focus:ring-4 focus:ring-blue-100 transition-all bg-white font-medium">
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="card-nexus p-6 rounded-3xl">
-                    <div class="h-40 bg-slate-100 rounded-2xl mb-4 flex items-center justify-center text-slate-300">
-                        <i class="fa-solid fa-engine text-5xl"></i>
-                    </div>
-                    <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">DISPONIBLE</span>
-                    <h3 class="font-bold text-lg mt-2">Motor Siemens 5HP Industrial</h3>
-                    <p class="text-xs text-slate-500 mt-1">Vendedor: Siasa Corp (Verified)</p>
-                    <div class="mt-4 flex justify-between items-center">
-                        <span class="text-xl font-black text-slate-800">$5.000</span>
-                        <button onclick="showCheckout('Motor Siemens 5HP', 5000)" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase">Comprar</button>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="card-nexus p-6 rounded-3xl relative">
+                    <div class="h-44 bg-blue-50 motor-svg rounded-2xl mb-5 border border-blue-100 flex items-center justify-center">
+                        </div>
+                    <span class="text-[10px] font-bold text-blue-700 bg-blue-100 px-3 py-1 rounded-full uppercase tracking-wider">Verified Asset</span>
+                    <h3 class="font-extrabold text-xl mt-3 text-slate-800">Motor Siemens 5HP Industrial</h3>
+                    <p class="text-xs text-slate-400 mt-1 font-medium">Siasa Corp (CUIT: 30-71...) - <i class="fa-solid fa-star text-amber-400"></i> 4.9</p>
+                    
+                    <div class="mt-6 flex justify-between items-center pt-5 border-t border-slate-100">
+                        <span class="text-3xl font-black text-slate-950">$5.000<span class="text-xs text-slate-400 font-normal">USD</span></span>
+                        <button onclick="showCheckout('Motor Siemens 5HP', 5000)" id="btn-comprar-motor" class="bg-blue-600 text-white px-5 py-3 rounded-xl text-xs font-black uppercase shadow-lg shadow-blue-200 active:scale-95 transition-all">Comprar</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="view-vender" class="hidden space-y-6">
-            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 opacity-5">
+                    <i class="fa-solid fa-building text-9xl text-slate-900"></i>
+                </div>
                 <h2 class="text-xl font-bold mb-6 flex items-center gap-2"><i class="fa-solid fa-building text-blue-600"></i> Perfil de Empresa Vendedora</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <input type="text" placeholder="Razón Social" class="bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500">
-                    <input type="text" placeholder="CUIT / Tax ID" class="bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                    <input type="text" id="demo-rs" placeholder="Razón Social (ej: Siasa Corp)" class="bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 font-semibold">
+                    <input type="text" id="demo-cuit" placeholder="CUIT / Tax ID (ej: 30-71...)" class="bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 font-semibold">
                 </div>
             </div>
 
             <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                <h2 class="text-xl font-bold mb-6 flex items-center gap-2"><i class="fa-solid fa-box-open text-blue-600"></i> Cargar Nuevo Producto</h2>
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2"><i class="fa-solid fa-box-open text-blue-600"></i> Publicar Nuevo Activo</h2>
                 <div class="space-y-4">
-                    <input type="text" id="new-prod-name" placeholder="Nombre del Producto" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none">
-                    <textarea placeholder="Descripción técnica del producto..." class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none h-32"></textarea>
+                    <input type="text" id="new-prod-name" placeholder="Nombre del Producto" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none font-semibold">
+                    <textarea id="new-prod-desc" placeholder="Descripción técnica del producto..." class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none h-32 font-medium"></textarea>
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="number" placeholder="Precio Base (USD)" class="bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none">
-                        <input type="number" placeholder="Stock disponible" class="bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none">
+                        <input type="number" id="new-prod-price" placeholder="Precio Base (USD)" class="bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none font-semibold">
+                        <input type="number" placeholder="Stock disponible" class="bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none font-semibold">
                     </div>
-                    <button class="w-full bg-slate-800 text-white py-4 rounded-xl font-bold uppercase tracking-widest mt-4">Publicar en el Marketplace</button>
+                    <button class="w-full bg-slate-950 text-white py-4 rounded-2xl font-black uppercase tracking-widest mt-4 text-xs shadow-lg shadow-slate-300">Publicar en el Marketplace</button>
                 </div>
             </div>
         </div>
 
-        <div id="modal-checkout" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-4">
-            <div class="bg-white max-w-2xl w-full rounded-3xl p-8 shadow-2xl">
-                <h2 class="text-2xl font-bold mb-2">Finalizar Compra Segura</h2>
-                <p class="text-slate-500 text-sm mb-6">Nexus AI retendrá los fondos hasta que confirmes la recepción.</p>
+        <div id="modal-checkout" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-4">
+            <div class="bg-white max-w-3xl w-full rounded-3xl p-10 shadow-2xl relative">
+                <button onclick="closeCheckout()" class="absolute top-6 right-6 text-slate-300 hover:text-slate-600 text-2xl"><i class="fa-solid fa-circle-xmark"></i></button>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div class="space-y-4">
-                        <h4 class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Datos Fiscales</h4>
-                        <input type="text" placeholder="CUIT / Razón Social" class="w-full bg-slate-50 border p-3 rounded-lg text-sm">
-                        <input type="text" placeholder="Dirección de Facturación" class="w-full bg-slate-50 border p-3 rounded-lg text-sm">
+                <h2 class="text-3xl font-black mb-2 text-slate-950">Confirmar Compra Segura</h2>
+                <p class="text-slate-500 text-sm mb-10 font-medium">El Escrow AI retendrá los fondos hasta que confirmes la recepción conforme.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div class="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                        <h4 class="text-[10px] font-black text-blue-600 uppercase tracking-widest">Datos Fiscales de Compra</h4>
+                        <input type="text" id="checkout-rs" placeholder="Razón Social (ej: Industria ABC SA)" class="w-full bg-white border border-slate-200 p-3.5 rounded-lg text-sm font-semibold">
+                        <input type="text" placeholder="Dirección de Facturación" class="w-full bg-white border border-slate-200 p-3.5 rounded-lg text-sm font-semibold">
                     </div>
-                    <div class="space-y-4">
-                        <h4 class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Entrega y Logística</h4>
-                        <input type="text" placeholder="Dirección de Entrega" class="w-full bg-slate-50 border p-3 rounded-lg text-sm">
-                        <select class="w-full bg-slate-50 border p-3 rounded-lg text-sm">
-                            <option>Retiro en Depósito (Gratis)</option>
-                            <option>Logística Nexus Express (24hs)</option>
-                            <option>Flete Tercerizado (48-72hs)</option>
+                    <div class="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                        <h4 class="text-[10px] font-black text-blue-600 uppercase tracking-widest">Entrega y Logística</h4>
+                        <input type="text" id="checkout-dir" placeholder="Dirección de Entrega Exacta" class="w-full bg-white border border-slate-200 p-3.5 rounded-lg text-sm font-semibold">
+                        <select class="w-full bg-white border border-slate-200 p-3.5 rounded-lg text-sm font-semibold">
+                            <option>Flete Terrestre (Estándar 48-72hs)</option>
+                            <option>Retiro en Depósito de Vendedor (Gratis)</option>
+                            <option>Logística Certificada Nexus (24hs)</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="bg-blue-50 p-4 rounded-xl mb-6">
-                    <div class="flex justify-between font-bold text-slate-700">
-                        <span>Total a depositar en Escrow:</span>
-                        <span id="checkout-monto">$0</span>
-                    </div>
+                <div class="bg-blue-600 p-6 rounded-2xl mb-8 flex justify-between items-center shadow-lg shadow-blue-200 relative overflow-hidden group">
+                     <div class="absolute -right-4 top-0 opacity-10 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-shield-halved text-[100px] text-white"></i>
+                     </div>
+                    <span class="text-sm font-black text-white uppercase tracking-widest relative z-10">Total a Depositar en Escrow AI</span>
+                    <span class="text-4xl font-black text-white relative z-10" id="checkout-monto">$0</span>
                 </div>
 
                 <div class="flex gap-4">
-                    <button onclick="closeCheckout()" class="flex-1 py-4 text-slate-400 font-bold uppercase text-xs">Cancelar</button>
-                    <button onclick="ejecutarCompraFinal()" class="flex-1 bg-blue-600 text-white py-4 rounded-xl font-bold uppercase text-xs shadow-lg shadow-blue-200">Confirmar y Generar Legajo</button>
+                    <button onclick="ejecutarCompraFinal()" id="btn-finalizar" class="flex-1 bg-slate-950 text-white py-5 rounded-2xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all">Confirmar Operación y Generar Legajo</button>
                 </div>
             </div>
         </div>
@@ -118,6 +132,22 @@
     </main>
 
     <script>
+        // --- UTILIDADES ---
+        const typingSpeed = 70; // milisegundos por letra en demo
+
+        async function typeWriter(inputId, text) {
+            const input = document.getElementById(inputId);
+            input.value = "";
+            input.classList.add('demo-writing');
+            for (let i = 0; i < text.length; i++) {
+                input.value += text[i];
+                await new Promise(r => setTimeout(r, typingSpeed));
+            }
+            input.classList.remove('demo-writing');
+            await new Promise(r => setTimeout(r, 800)); // Espera entre inputs
+        }
+
+        // --- NAVEGACIÓN ---
         function switchTab(tab) {
             const viewC = document.getElementById('view-comprar');
             const viewV = document.getElementById('view-vender');
@@ -125,15 +155,13 @@
             const btnV = document.getElementById('tab-vender');
 
             if(tab === 'comprar') {
-                viewC.classList.remove('hidden');
-                viewV.classList.add('hidden');
-                btnC.classList.add('tab-active');
-                btnV.classList.remove('tab-active');
+                viewC.classList.remove('hidden'); viewV.classList.add('hidden');
+                btnC.classList.add('tab-active'); btnV.classList.remove('tab-active');
+                window.scrollTo(0,0);
             } else {
-                viewV.classList.remove('hidden');
-                viewC.classList.add('hidden');
-                btnV.classList.add('tab-active');
-                btnC.classList.remove('tab-active');
+                viewV.classList.remove('hidden'); viewC.classList.add('hidden');
+                btnV.classList.add('tab-active'); btnC.classList.remove('tab-active');
+                window.scrollTo(0,0);
             }
         }
 
@@ -149,9 +177,58 @@
         }
 
         function ejecutarCompraFinal() {
-            // Aquí llamaríamos a la función de PDF que ya tenemos
-            alert("Operación Iniciada. Generando Legajo para: " + window.currentProd);
+            // Reutilizamos la función de PDF (simplificada para demo)
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(20); doc.text("NEXUS LEGAJO DIGITAL", 20, 20);
+            doc.setFontSize(10); doc.text(`Activo: ${window.currentProd}`, 20, 40);
+            doc.text(`Monto: USD ${window.currentMonto}`, 20, 50);
+            doc.save('Legajo_Demo_Nexus.pdf');
+            
+            alert("¡Modo Demo Finalizado! Se ha descargado el Legajo de ejemplo.");
             closeCheckout();
+        }
+
+        // --- LÓGICA MODO DEMO COMPLETO ---
+        async function iniciarDemoCompleta() {
+            alert("Iniciando Módulo DEMO. Por favor, observe el movimiento automático del sistema.");
+
+            // 1. PASO: ONBOARDING VENDEDOR
+            switchTab('vender');
+            await new Promise(r => setTimeout(r, 1000));
+            
+            // Simular carga de empresa
+            await typeWriter('demo-rs', 'Siemens Argentina SA');
+            await typeWriter('demo-cuit', '30-50000000-1');
+            
+            // Simular carga de producto
+            await typeWriter('new-prod-name', 'Transformador de Potencia 10kVA');
+            await typeWriter('new-prod-desc', 'Transformador trifásico, enfriado por aire, bajo ruido industrial v2026.');
+            await typeWriter('new-prod-price', '15000');
+            
+            alert("Paso 1 Completado: Vendedor Registrado y Producto Publicado. Cambiando a vista Comprador.");
+
+            // 2. PASO: BÚSQUEDA DEL COMPRADOR
+            switchTab('comprar');
+            await new Promise(r => setTimeout(r, 1500));
+            
+            // Simular búsqueda semántica
+            await typeWriter('main-search', 'Transformador trifásico de 10kVA...');
+            
+            alert("Paso 2 Completado: Búsqueda realizada. Procediendo a la Compra Asegurada.");
+
+            // 3. PASO: CHECKOUT Y LEGAJO
+            showCheckout('Transformador 10kVA', 15000);
+            await new Promise(r => setTimeout(r, 1500));
+            
+            // Simular carga de datos de compra
+            await typeWriter('checkout-rs', 'Fábrica Motores SRL');
+            await typeWriter('checkout-dir', 'Av. Córdoba 1234, CABA, Argentina');
+            
+            // 4. PASO FINAL: EJECUTAR PDF
+            await new Promise(r => setTimeout(r, 1000));
+            alert("Paso Final: Generando Legajo Digital Inmutable.");
+            ejecutarCompraFinal();
         }
     </script>
 </body>
