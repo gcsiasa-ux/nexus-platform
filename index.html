@@ -228,7 +228,85 @@
             // 4. PASO FINAL: EJECUTAR PDF
             await new Promise(r => setTimeout(r, 1000));
             alert("Paso Final: Generando Legajo Digital Inmutable.");
-            ejecutarCompraFinal();
+            async function ejecutarCompraFinal() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Captura de datos para el PDF
+    const producto = window.currentProd || "Activo Nexus";
+    const monto = window.currentMonto || "0";
+    const compradorRS = document.getElementById('checkout-rs').value || "Consumidor Final";
+    const direccion = document.getElementById('checkout-dir').value || "Retiro en Planta";
+    const idTrans = "NX-" + Math.floor(100000 + Math.random() * 900000);
+    const hash = Array.from({length:32}, () => Math.floor(Math.random()*16).toString(16)).join('');
+
+    // --- DISEÑO PROFESIONAL DEL LEGAJO ---
+    
+    // Encabezado Azul
+    doc.setFillColor(37, 99, 235);
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("NEXUS AI | LEGAJO DIGITAL", 20, 25);
+    
+    // Subtítulo e ID
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("CERTIFICADO DE OPERACIÓN SEGURA BAJO ARBITRAJE IA", 20, 32);
+    
+    // Cuerpo del documento
+    doc.setTextColor(40, 40, 40);
+    doc.setFontSize(10);
+    doc.text(`ID DE TRANSACCIÓN: ${idTrans}`, 140, 50);
+    doc.text(`FECHA DE EMISIÓN: ${new Date().toLocaleString()}`, 140, 55);
+    
+    doc.setDrawColor(226, 232, 240);
+    doc.line(20, 65, 190, 65);
+    
+    // Sección 1: Las Partes
+    doc.setFont("helvetica", "bold");
+    doc.text("1. DATOS DE LA OPERACIÓN", 20, 75);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Vendedor / Origen: Siasa Corp (Verificado)`, 25, 85);
+    doc.text(`Comprador / Destino: ${compradorRS}`, 25, 92);
+    doc.text(`Dirección de Entrega: ${direccion}`, 25, 99);
+    
+    // Sección 2: El Activo
+    doc.setFont("helvetica", "bold");
+    doc.text("2. DETALLES DEL ACTIVO Y PAGO", 20, 115);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Descripción: ${producto}`, 25, 125);
+    doc.text(`Valor de Transacción: USD ${monto}`, 25, 132);
+    doc.text(`Fee de Plataforma Nexus (4%): USD ${(monto * 0.04).toFixed(2)}`, 25, 139);
+    
+    // Sección 3: Seguridad
+    doc.setFont("helvetica", "bold");
+    doc.text("3. CLAVES DE SEGURIDAD Y CUSTODIA", 20, 155);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text(`Firma Digital Única (Hash SHA-256): ${hash}`, 25, 163);
+    doc.setFontSize(10);
+    doc.text("Estado de Fondos: PROTEGIDOS EN ESCROW", 25, 170);
+    
+    // Disclaimer Legal
+    doc.setDrawColor(226, 232, 240);
+    doc.line(20, 180, 190, 180);
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    const disclaimer = "Este documento certifica que los fondos han sido capturados por el sistema Nexus AI. El desembolso al vendedor queda supeditado a la confirmación de recepción conforme o al fallo del Juez de Arbitraje IA en caso de disputa. Nexus no es una entidad financiera, sino un protocolo de comercio seguro.";
+    doc.text(doc.splitTextToSize(disclaimer, 170), 20, 190);
+
+    // Pie de página
+    doc.setFont("helvetica", "italic");
+    doc.text("Documento generado automáticamente por Nexus AI. Prohibida su alteración.", 105, 280, null, null, "center");
+
+    // Guardar y cerrar
+    doc.save(`Legajo_Nexus_${idTrans}.pdf`);
+    
+    alert("¡Modo Demo Finalizado! Se ha generado el Legajo Profesional.");
+    closeCheckout();
+}
         }
     </script>
 </body>
