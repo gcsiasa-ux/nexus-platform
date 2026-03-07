@@ -13,6 +13,9 @@
         .hidden { display: none; }
         .card-nexus { background: white; border-radius: 1.5rem; border: 1px solid #e2e8f0; transition: 0.3s; }
         .card-nexus:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        /* Cursor animado para la escritura */
+        .cursor-efecto::after { content: '|'; animation: parpadeo 0.7s infinite; color: #2563eb; margin-left: 2px; }
+        @keyframes parpadeo { 50% { opacity: 0; } }
     </style>
 </head>
 <body class="text-slate-900">
@@ -22,8 +25,8 @@
             <div class="w-10 h-10 bg-blue-800 rounded-xl flex items-center justify-center text-white font-black text-xl">N</div>
             <div class="text-2xl font-black tracking-tighter uppercase">Nexus<span class="text-blue-700">.Market</span></div>
         </div>
-        <button onclick="iniciarDemo()" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest shadow-lg transition-all active:scale-95">
-            <i class="fa-solid fa-play mr-2"></i> Iniciar Demo
+        <button onclick="iniciarDemoVendedora()" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest shadow-lg transition-all active:scale-95">
+            <i class="fa-solid fa-play mr-2"></i> Iniciar Demo Animada
         </button>
     </nav>
 
@@ -36,15 +39,15 @@
         
         <div id="view-comprar" class="space-y-8">
             <input type="text" id="main-search" placeholder="Buscar activos industriales..." class="w-full p-5 rounded-2xl border-none shadow-md text-lg outline-none bg-white focus:ring-2 focus:ring-blue-100">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="card-nexus p-6">
                     <div class="h-40 bg-blue-50 rounded-2xl mb-4 flex items-center justify-center text-blue-300">
-                        <i class="fa-solid fa-gear text-6xl"></i>
+                        <i class="fa-solid fa-bolt text-6xl"></i>
                     </div>
                     <h3 class="font-black text-xl">Motor Siemens 5HP Industrial</h3>
-                    <p class="text-xs text-slate-400 mb-6 italic">ID: NX-99283 - Verificado por Nexus AI</p>
+                    <p class="text-xs text-slate-400 mb-6 italic tracking-tight uppercase">Estado: Verificado por Nexus AI</p>
                     <div class="flex justify-between items-center border-t pt-4">
-                        <span class="text-2xl font-black">$5.000<span class="text-sm font-normal text-slate-400 ml-1">USD</span></span>
+                        <span class="text-2xl font-black">$5.000</span>
                         <button onclick="abrirCheckout('Motor Siemens 5HP', 5000)" class="bg-blue-800 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase shadow-md active:scale-95 transition-all">Comprar</button>
                     </div>
                 </div>
@@ -55,8 +58,8 @@
             <div class="bg-white p-8 rounded-3xl border shadow-sm">
                 <h2 class="text-lg font-black mb-6 uppercase text-blue-800 tracking-widest">Registro de Empresa</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="vender-rs" placeholder="Razón Social" class="p-4 bg-slate-50 rounded-xl outline-none font-bold focus:bg-white border focus:border-blue-200">
-                    <input type="text" id="vender-cuit" placeholder="CUIT / Tax ID" class="p-4 bg-slate-50 rounded-xl outline-none font-bold focus:bg-white border focus:border-blue-200">
+                    <input type="text" id="vender-rs" placeholder="Razón Social" class="p-4 bg-slate-50 rounded-xl outline-none font-bold border">
+                    <input type="text" id="vender-cuit" placeholder="CUIT / Tax ID" class="p-4 bg-slate-50 rounded-xl outline-none font-bold border">
                 </div>
             </div>
         </div>
@@ -64,27 +67,38 @@
         <div id="modal-checkout" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-4">
             <div class="bg-white max-w-md w-full rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden">
                 <h2 class="text-3xl font-black mb-2 text-slate-900">Checkout</h2>
-                <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest mb-8">Protocolo de Custodia Escrow</p>
+                <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest mb-8">Custodia Escrow Inteligente</p>
                 
                 <div class="space-y-4 mb-8">
-                    <input type="text" id="check-rs" placeholder="Empresa Compradora" class="w-full p-4 border rounded-2xl outline-none focus:border-blue-800 font-bold">
-                    <input type="text" id="check-dir" placeholder="Dirección de Planta / Entrega" class="w-full p-4 border rounded-2xl outline-none focus:border-blue-800 font-bold">
+                    <input type="text" id="check-rs" placeholder="Empresa Compradora" class="w-full p-4 border rounded-2xl outline-none font-bold">
+                    <input type="text" id="check-dir" placeholder="Dirección de Planta / Entrega" class="w-full p-4 border rounded-2xl outline-none font-bold">
                 </div>
 
                 <div class="bg-blue-800 p-6 rounded-2xl mb-8 text-white flex justify-between items-center shadow-xl">
-                    <span class="font-bold text-xs uppercase tracking-tighter">Monto a Retener</span>
+                    <span class="font-bold text-xs uppercase tracking-tighter">Retención Escrow</span>
                     <span class="text-4xl font-black" id="check-monto">$0</span>
                 </div>
 
                 <button onclick="generarLegajoProfesional()" class="w-full bg-slate-950 text-white py-5 rounded-2xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all mb-4">Confirmar y Descargar Legajo</button>
-                <button onclick="cerrarCheckout()" class="w-full text-slate-400 font-bold text-[10px] uppercase tracking-widest">Cancelar Operación</button>
+                <button onclick="cerrarCheckout()" class="w-full text-slate-400 font-bold text-[10px] uppercase tracking-widest">Cancelar</button>
             </div>
         </div>
-
     </main>
 
     <script>
-        // NAVEGACIÓN
+        // --- FUNCIÓN DE ESCRITURA ANIMADA ---
+        async function escribirTexto(idElemento, texto) {
+            const el = document.getElementById(idElemento);
+            el.value = "";
+            el.parentElement.classList.add('cursor-efecto');
+            for (let i = 0; i < texto.length; i++) {
+                el.value += texto[i];
+                await new Promise(r => setTimeout(r, 40)); // Velocidad de escritura
+            }
+            el.parentElement.classList.remove('cursor-efecto');
+            await new Promise(r => setTimeout(r, 600)); // Pausa al terminar
+        }
+
         function switchTab(tab) {
             const isComprar = tab === 'comprar';
             document.getElementById('view-comprar').classList.toggle('hidden', !isComprar);
@@ -104,17 +118,15 @@
             document.getElementById('modal-checkout').classList.add('hidden');
         }
 
-        // --- LEGAJO PROFESIONAL RESTAURADO ---
         function generarLegajoProfesional() {
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                const rs = document.getElementById('check-rs').value || 'Empresa Test B2B';
-                const dir = document.getElementById('check-dir').value || 'Retiro en Planta';
+                const rs = document.getElementById('check-rs').value || 'Comprador Demo';
+                const dir = document.getElementById('check-dir').value || 'Entrega en Planta';
                 const idTrans = "NX-" + Math.floor(100000 + Math.random() * 900000);
 
-                // Diseño: Franja Azul Superior
-                doc.setFillColor(30, 58, 138); // Azul Oscuro B2B
+                doc.setFillColor(30, 58, 138); 
                 doc.rect(0, 0, 210, 45, 'F');
                 doc.setTextColor(255, 255, 255);
                 doc.setFont("helvetica", "bold");
@@ -124,7 +136,6 @@
                 doc.setFont("helvetica", "normal");
                 doc.text("TRANSACCIÓN COMERCIAL B2B PROTEGIDA POR ESCROW", 20, 33);
                 
-                // Cuerpo del Legajo
                 doc.setTextColor(40, 40, 40);
                 doc.setFontSize(10);
                 doc.text(`ID OPERACIÓN: ${idTrans}`, 140, 60);
@@ -139,7 +150,6 @@
                 doc.text(`Comprador Adquirente: ${rs}`, 25, 109);
                 doc.text(`Lugar de Entrega: ${dir}`, 25, 116);
                 
-                // Cláusula de Arbitraje
                 doc.setFillColor(245, 247, 250);
                 doc.rect(20, 130, 170, 35, 'F');
                 doc.setFont("helvetica", "bold");
@@ -149,40 +159,33 @@
                 const text = "Los fondos se encuentran en custodia inmutable. La liberación al vendedor se procesará tras la validación de recepción del activo mediante el protocolo Nexus AI o ante resolución firme de arbitraje digital.";
                 doc.text(doc.splitTextToSize(text, 160), 25, 146);
                 
-                // Firma Digital Ficticia
                 doc.setFontSize(7);
                 doc.setTextColor(180, 180, 180);
-                doc.text(`HASH SHA-256 SEGURIDAD: ${Array.from({length:40}, () => Math.floor(Math.random()*16).toString(16)).join('')}`, 20, 200);
+                doc.text(`HASH DE SEGURIDAD: ${Array.from({length:40}, () => Math.floor(Math.random()*16).toString(16)).join('')}`, 20, 200);
 
                 doc.save(`Legajo_Nexus_${idTrans}.pdf`);
-                alert("¡Legajo generado y descargado con éxito!");
                 cerrarCheckout();
             } catch (err) {
-                alert("Error al crear PDF: " + err.message);
+                alert("Error al crear PDF profesional: " + err.message);
             }
         }
 
-        // DEMO PASO A PASO
-        async function iniciarDemo() {
-            alert("Iniciando Demo: Nexus automatizará el proceso por usted.");
+        // --- DEMO VENDEDORA CON ANIMACIONES ---
+        async function iniciarDemoVendedora() {
+            alert("Iniciando Proceso Nexus. Observe cómo la IA gestiona la operación.");
             
             switchTab('vender');
-            document.getElementById('vender-rs').value = "Siemens Argentina SA";
-            document.getElementById('vender-cuit').value = "30-50000000-1";
-            
-            await new Promise(r => setTimeout(r, 1200));
+            await escribirTexto('vender-rs', 'Industrias Metalúrgicas Siemens SA');
+            await escribirTexto('vender-cuit', '30-50000000-1');
             
             switchTab('comprar');
-            document.getElementById('main-search').value = "Motor Industrial...";
-            
-            await new Promise(r => setTimeout(r, 1200));
+            await escribirTexto('main-search', 'Motor Siemens 5HP...');
             
             abrirCheckout('Motor Siemens 5HP', 5000);
-            document.getElementById('check-rs').value = "Fábrica Metalúrgica Pilar";
-            document.getElementById('check-dir').value = "Parque Industrial, Lote 4B";
+            await escribirTexto('check-rs', 'Aceros del Norte SRL');
+            await escribirTexto('check-dir', 'Planta Industrial Pilar, Sector B');
             
-            await new Promise(r => setTimeout(r, 1200));
-            
+            await new Promise(r => setTimeout(r, 800));
             generarLegajoProfesional();
         }
     </script>
