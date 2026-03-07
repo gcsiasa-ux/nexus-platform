@@ -3,301 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Marketplace | B2B AI Infrastructure</title>
+    <title>Nexus | B2B Industrial Infrastructure</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
-        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        .tab-active { border-bottom: 4px solid #1e3a8a; color: #1e3a8a; font-weight: 900; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { background-color: #f1f5f9; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .hidden { display: none; }
-        .card-nexus { background: white; border-radius: 2rem; border: 1px solid #e2e8f0; transition: 0.3s; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .card-nexus:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .cursor-efecto::after { content: '|'; animation: parpadeo 0.7s infinite; color: #2563eb; margin-left: 2px; }
-        @keyframes parpadeo { 50% { opacity: 0; } }
+        .tab-active { border-bottom: 4px solid #1e3a8a; color: #1e3a8a; font-weight: 900; }
         
+        /* Pop-ups Optimizados (Tamaño Ejecutivo) */
         #demo-guia {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 1000; background: #0f172a; color: white; padding: 45px; border-radius: 40px;
-            box-shadow: 0 0 0 9999px rgba(0,0,0,0.7), 0 25px 50px -12px rgba(0,0,0,0.5);
-            display: none; max-width: 650px; width: 90%; text-align: center; border: 1px solid #334155;
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            background: #0f172a; color: white; padding: 25px; border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); border: 1px solid #334155;
+            max-width: 380px; width: 90%; display: none; animation: slideIn 0.5s ease;
         }
-        .btn-descarga { background: #1e40af; color: white; padding: 14px; border-radius: 18px; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; width: 100%; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); }
-        .btn-descarga:hover { background: #2563eb; transform: scale(1.02); }
-        .step-icon { font-size: 3.5rem; color: #3b82f6; margin-bottom: 25px; filter: drop-shadow(0 0 10px rgba(59,130,246,0.3)); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .btn-next { background: #3b82f6; color: white; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px; }
+        .cursor-type::after { content: '|'; animation: blink 0.7s infinite; color: #3b82f6; }
+        @keyframes blink { 50% { opacity: 0; } }
+        
+        .status-badge { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 900; text-transform: uppercase; }
+        .bg-smart-contract { background: #000; color: #0f0; font-family: 'Courier New', monospace; padding: 15px; border-radius: 10px; font-size: 11px; }
     </style>
 </head>
-<body class="text-slate-900">
+<body>
 
-    <div id="demo-guia">
-        <i id="guia-icono" class="fa-solid fa-microchip step-icon"></i>
-        <div class="mb-8">
-            <h3 id="guia-titulo" class="text-blue-400 font-black text-xs uppercase tracking-[0.3em] mb-3">Protocolo Nexus</h3>
-            <p id="guia-texto" class="font-bold text-xl leading-relaxed text-slate-100"></p>
+    <nav class="bg-white border-b p-5 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-blue-900 rounded-xl flex items-center justify-center text-white font-black text-xl">N</div>
+            <span class="text-xl font-black uppercase tracking-tighter">Nexus<span class="text-blue-600">.Market</span></span>
         </div>
-        
-        <div id="seccion-descargas" class="hidden mt-8 pt-8 border-t border-slate-800 animate-fade-in">
-            <p class="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-6">Documentación Certificada para Legal / Auditoría</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button onclick="descargarDictamenLegal()" class="btn-descarga">
-                    <i class="fa-solid fa-file-contract"></i> Dictamen Legal
-                </button>
-                <button onclick="descargarWhitepaperTecnico()" class="btn-descarga">
-                    <i class="fa-solid fa-shield-halved"></i> Whitepaper Técnico
-                </button>
-            </div>
-        </div>
-
-        <button id="btn-continuar" class="mt-8 bg-blue-600 hover:bg-blue-700 text-white px-12 py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-2xl transition-all active:scale-95 w-full">
-            Continuar <i class="fa-solid fa-chevron-right ml-2"></i>
-        </button>
-    </div>
-
-    <nav class="p-6 bg-white border-b flex justify-between items-center sticky top-0 z-[100] shadow-sm">
-        <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-blue-900 rounded-2xl flex items-center justify-center text-white font-black text-2xl">N</div>
-            <div class="text-2xl font-black tracking-tighter uppercase">Nexus<span class="text-blue-700">.Market</span></div>
-        </div>
-        <button onclick="iniciarDemoMaestra()" class="bg-amber-500 hover:bg-amber-600 text-white px-10 py-4 rounded-full text-xs font-black uppercase tracking-widest shadow-xl transition-all">
-            <i class="fa-solid fa-play-circle mr-2"></i> Iniciar Presentación
-        </button>
+        <button onclick="runMasterDemo()" class="bg-amber-500 text-white px-6 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-amber-600 transition-all">Iniciar Demo Profesional</button>
     </nav>
 
-    <div class="max-w-6xl mx-auto mt-12 flex gap-10 px-8 border-b border-slate-200">
-        <button onclick="cambiarSeccion('vendedor')" id="tab-vender" class="pb-5 text-xs uppercase tracking-widest text-slate-400 font-black transition-all">Panel Vendedor</button>
-        <button onclick="cambiarSeccion('comprador')" id="tab-comprar" class="pb-5 text-xs uppercase tracking-widest text-slate-400 font-black transition-all">Panel Comprador</button>
+    <div id="demo-guia">
+        <div class="flex items-start gap-4 mb-4">
+            <i id="guia-ico" class="fa-solid fa-microchip text-blue-400 text-3xl"></i>
+            <div>
+                <h4 id="guia-tit" class="text-blue-400 font-black text-[10px] uppercase tracking-widest mb-1">Nexus AI</h4>
+                <p id="guia-txt" class="text-sm font-bold leading-snug text-slate-200"></p>
+            </div>
+        </div>
+        <div id="guia-extra" class="hidden border-t border-slate-700 pt-4 mt-4 space-y-2">
+            <button onclick="downloadLegal()" class="text-[10px] font-black uppercase bg-slate-800 p-3 rounded-lg w-full flex items-center justify-center gap-2 hover:bg-slate-700"><i class="fa-solid fa-file-contract text-blue-400"></i> Dictamen Legal</button>
+            <button onclick="downloadTech()" class="text-[10px] font-black uppercase bg-slate-800 p-3 rounded-lg w-full flex items-center justify-center gap-2 hover:bg-slate-700"><i class="fa-solid fa-shield-halved text-blue-400"></i> Protocolo Tech</button>
+        </div>
+        <button id="btn-next" class="btn-next">Siguiente Paso <i class="fa-solid fa-arrow-right ml-1"></i></button>
     </div>
 
-    <main class="max-w-6xl mx-auto p-10">
+    <div class="max-w-5xl mx-auto mt-10 flex gap-10 px-6 border-b">
+        <button id="tab-v" onclick="view('vender')" class="pb-4 text-[11px] font-black uppercase tracking-widest text-slate-400 transition-all">Panel Vendedor</button>
+        <button id="tab-c" onclick="view('comprar')" class="pb-4 text-[11px] font-black uppercase tracking-widest text-slate-400 transition-all">Panel Comprador</button>
+    </div>
+
+    <main class="max-w-5xl mx-auto p-6">
         
-        <div id="view-vender" class="hidden space-y-10">
-            <div class="bg-white p-12 rounded-[2.5rem] border shadow-sm">
-                <h2 class="text-2xl font-black mb-8 text-blue-900 uppercase tracking-tighter">Validación de Perfil Corporativo</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-3">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Razón Social</label>
-                        <input type="text" id="vender-rs" class="w-full p-5 bg-slate-50 rounded-2xl border-2 border-slate-100 outline-none font-bold text-lg focus:border-blue-500 transition-all">
-                    </div>
-                    <div class="space-y-3">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">CUIT / Identificación Fiscal</label>
-                        <input type="text" id="vender-cuit" class="w-full p-5 bg-slate-50 rounded-2xl border-2 border-slate-100 outline-none font-bold text-lg focus:border-blue-500 transition-all">
-                    </div>
+        <div id="view-vender" class="hidden space-y-8">
+            <div class="bg-white p-10 rounded-3xl border shadow-sm">
+                <h3 class="font-black uppercase text-xs text-blue-900 mb-6">Registro de Empresa</h3>
+                <div class="grid grid-cols-2 gap-6">
+                    <input type="text" id="v-rs" placeholder="Razón Social" class="p-4 bg-slate-50 rounded-xl border-2 outline-none font-bold">
+                    <input type="text" id="v-cuit" placeholder="CUIT" class="p-4 bg-slate-50 rounded-xl border-2 outline-none font-bold">
                 </div>
             </div>
 
-            <div id="vender-docs" class="bg-white p-12 rounded-[2.5rem] border shadow-sm opacity-40 transition-all duration-700">
-                <h2 class="text-2xl font-black mb-6 text-slate-800 uppercase tracking-tighter">Inventario y Documentación Técnica</h2>
-                <div class="flex items-center gap-8 p-12 border-4 border-dashed border-slate-100 rounded-[2.5rem] bg-slate-50">
-                    <i id="doc-status-icon" class="fa-solid fa-file-circle-plus text-6xl text-slate-300"></i>
-                    <div class="text-left">
-                        <p id="doc-status-text" class="text-xl font-bold text-slate-400">Esperando carga de archivos del activo...</p>
-                        <p class="text-sm text-slate-400 mt-1">Soporta PDF, Planos CAD, Certificados de Origen.</p>
+            <div id="v-upload" class="bg-white p-10 rounded-3xl border shadow-sm opacity-40">
+                <h3 class="font-black uppercase text-xs text-slate-800 mb-6">Carga y Auditoría AI del Activo</h3>
+                <div class="border-4 border-dashed border-slate-100 rounded-3xl p-10 text-center">
+                    <i id="v-up-ico" class="fa-solid fa-cloud-arrow-up text-5xl text-slate-200 mb-4"></i>
+                    <p id="v-up-txt" class="font-bold text-slate-400 uppercase text-xs tracking-widest">Arrastre archivos de validación técnica</p>
+                    <div id="v-ai-analysis" class="hidden mt-4 p-4 bg-blue-50 rounded-xl text-left border border-blue-100">
+                        <p class="text-[10px] font-black text-blue-600 mb-2 tracking-widest">AUDITORÍA AI EN CURSO...</p>
+                        <div class="h-2 w-full bg-blue-200 rounded-full overflow-hidden">
+                            <div id="ai-progress" class="h-full bg-blue-600 w-0 transition-all duration-1000"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="view-comprar" class="hidden space-y-12">
+        <div id="view-comprar" class="hidden space-y-8">
             <div class="relative">
-                <input type="text" id="main-search" placeholder="Buscar activos industriales..." class="w-full p-8 rounded-[2.5rem] shadow-2xl text-xl outline-none border-none bg-white pr-52">
-                <div id="ai-verified-badge" class="absolute right-8 top-1/2 -translate-y-1/2 hidden bg-emerald-500 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg animate-pulse">
-                    <i class="fa-solid fa-check-double mr-2"></i> AI Verified
+                <input type="text" id="c-search" placeholder="Buscar maquinaria industrial..." class="w-full p-6 rounded-2xl shadow-xl border-none outline-none font-bold text-lg">
+                <div id="c-verified" class="absolute right-6 top-1/2 -translate-y-1/2 hidden bg-emerald-500 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                    <i class="fa-solid fa-circle-check mr-1"></i> Verificado por AI
                 </div>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                <div class="card-nexus p-10">
-                    <div class="h-60 bg-slate-50 rounded-[2.5rem] mb-8 flex items-center justify-center text-blue-900/10">
-                        <i class="fa-solid fa-industry text-8xl"></i>
+            <div id="c-list" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-3xl border-2 border-slate-100 shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center text-blue-900"><i class="fa-solid fa-industry text-3xl"></i></div>
+                        <span class="status-badge bg-blue-100 text-blue-700">Auditado 100%</span>
                     </div>
-                    <h3 class="font-black text-2xl mb-2 text-slate-800">Motor Siemens 5HP</h3>
-                    <p class="text-[11px] text-slate-400 mb-8 font-black uppercase tracking-widest">Escrow Inmutable Activado</p>
-                    <div class="flex justify-between items-center border-t pt-8">
-                        <span class="text-4xl font-black text-blue-950">$5.000</span>
-                        <button onclick="abrirCheckoutV3('Motor Siemens 5HP', 5000)" class="bg-blue-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:bg-blue-700 transition-all">Comprar</button>
+                    <h4 class="font-black text-xl mb-1">Motor Siemens 5HP</h4>
+                    <p class="text-xs text-slate-400 font-bold mb-6">ID Operación: NX-884920</p>
+                    <div class="flex justify-between items-center pt-6 border-t">
+                        <span class="text-3xl font-black text-slate-900">$5.000</span>
+                        <button onclick="startCheckout('Motor Siemens 5HP', 5000)" class="bg-blue-900 text-white px-8 py-3 rounded-xl font-black text-xs uppercase shadow-lg">Comprar ahora</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="modal-checkout" class="fixed inset-0 bg-slate-950/95 backdrop-blur-xl hidden z-[1000] flex items-center justify-center p-6">
-            <div class="bg-white max-w-xl w-full rounded-[4rem] p-16 shadow-2xl text-center">
-                <div class="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center text-blue-600 mx-auto mb-8 shadow-inner">
-                    <i class="fa-solid fa-vault text-3xl"></i>
+        <div id="modal-escrow" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden z-[2000] flex items-center justify-center p-4">
+            <div class="bg-white max-w-lg w-full rounded-[2.5rem] p-12 text-center shadow-2xl">
+                <h3 class="text-2xl font-black mb-2 tracking-tighter">Ejecución de Escrow</h3>
+                <p class="text-blue-600 font-bold uppercase text-[9px] tracking-[0.3em] mb-8">Blockchain Smart Contract Protocol</p>
+                <div class="space-y-4 text-left mb-8">
+                    <input type="text" id="check-rs" placeholder="Empresa Compradora" class="w-full p-4 bg-slate-50 border rounded-xl font-bold">
+                    <input type="text" id="check-dir" placeholder="Planta de Entrega" class="w-full p-4 bg-slate-50 border rounded-xl font-bold">
                 </div>
-                <h2 class="text-4xl font-black mb-4 tracking-tighter">Configurar Escrow</h2>
-                <p class="text-blue-600 font-bold uppercase text-[11px] tracking-[0.3em] mb-12">Seguridad Patrimonial Digital</p>
-                
-                <div class="space-y-6 mb-12">
-                    <input type="text" id="check-rs" placeholder="Razón Social del Comprador" class="w-full p-6 border-2 border-slate-100 rounded-3xl font-bold bg-slate-50 focus:border-blue-500 outline-none text-lg">
-                    <input type="text" id="check-dir" placeholder="Planta de Entrega y Validación" class="w-full p-6 border-2 border-slate-100 rounded-3xl font-bold bg-slate-50 focus:border-blue-500 outline-none text-lg">
+                <div class="bg-smart-contract text-left mb-8">
+                    <p class="mb-1 text-slate-400 opacity-50 text-[9px]">CONTRACT_LOG:</p>
+                    <p id="contract-status">> INICIANDO PROTOCOLO...</p>
+                    <p id="contract-hash" class="text-[9px] mt-2 text-slate-500">HASH: WAITING...</p>
                 </div>
-
-                <div class="bg-slate-900 p-10 rounded-[2.5rem] mb-12 text-white flex justify-between items-center shadow-2xl">
-                    <span class="font-bold text-xs uppercase opacity-40 tracking-widest">Total Protegido</span>
-                    <span class="text-5xl font-black" id="monto-display">$0</span>
-                </div>
-
-                <button onclick="confirmarYGenerarLegajo()" class="w-full bg-blue-700 text-white py-7 rounded-[2rem] font-black uppercase text-sm shadow-2xl hover:bg-blue-600 transition-all">Ejecutar y Emitir Legajo</button>
+                <button onclick="finalizarTodo()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black uppercase text-xs shadow-xl transition-all active:scale-95">Finalizar y Emitir Legajo</button>
             </div>
         </div>
-
     </main>
 
     <script>
-        // --- MOTOR DE LA DEMO ---
         const { jsPDF } = window.jspdf;
 
-        function cambiarSeccion(s) {
-            const esC = s === 'comprador';
-            document.getElementById('view-comprar').classList.toggle('hidden', !esC);
-            document.getElementById('view-vender').classList.toggle('hidden', esC);
-            document.getElementById('tab-comprar').className = esC ? 'tab-active pb-5 text-xs uppercase tracking-widest' : 'pb-5 text-xs uppercase tracking-widest text-slate-400 font-black';
-            document.getElementById('tab-vender').className = !esC ? 'tab-active pb-5 text-xs uppercase tracking-widest' : 'pb-5 text-xs uppercase tracking-widest text-slate-400 font-black';
+        // NAV
+        function view(s) {
+            const esV = s === 'vender';
+            document.getElementById('view-vender').classList.toggle('hidden', !esV);
+            document.getElementById('view-comprar').classList.toggle('hidden', esV);
+            document.getElementById('tab-v').className = esV ? 'tab-active pb-4 text-[11px] font-black uppercase tracking-widest' : 'pb-4 text-[11px] font-black uppercase tracking-widest text-slate-400';
+            document.getElementById('tab-c').className = !esV ? 'tab-active pb-4 text-[11px] font-black uppercase tracking-widest' : 'pb-4 text-[11px] font-black uppercase tracking-widest text-slate-400';
         }
 
-        async function step(titulo, texto, icono = 'fa-microchip', mostrarDescargas = false) {
-            const modal = document.getElementById('demo-guia');
-            document.getElementById('guia-titulo').innerText = titulo;
-            document.getElementById('guia-texto').innerText = texto;
-            document.getElementById('guia-icono').className = `fa-solid ${icono} step-icon`;
-            
-            const descargas = document.getElementById('seccion-descargas');
-            descargas.classList.toggle('hidden', !mostrarDescargas);
-            
-            modal.style.display = 'block';
-            return new Promise(resolve => {
-                document.getElementById('btn-continuar').onclick = () => {
-                    modal.style.display = 'none';
-                    resolve();
-                };
-            });
+        // ENGINE
+        async function step(txt, ico='fa-microchip', tit='Nexus AI', legal=false) {
+            const m = document.getElementById('demo-guia');
+            document.getElementById('guia-txt').innerText = txt;
+            document.getElementById('guia-ico').className = `fa-solid ${ico} text-blue-400 text-3xl`;
+            document.getElementById('guia-tit').innerText = tit;
+            document.getElementById('guia-extra').classList.toggle('hidden', !legal);
+            m.style.display = 'block';
+            return new Promise(r => { document.getElementById('btn-next').onclick = () => { m.style.display='none'; r(); } });
         }
 
-        async function escribir(id, texto) {
-            const el = document.getElementById(id);
-            el.value = "";
-            el.parentElement.classList.add('cursor-efecto');
-            for (let char of texto) {
-                el.value += char;
-                await new Promise(r => setTimeout(r, 40));
-            }
-            el.parentElement.classList.remove('cursor-efecto');
-            await new Promise(r => setTimeout(r, 300));
+        async function type(id, txt) {
+            const el = document.getElementById(id); el.value = ""; el.parentElement.classList.add('cursor-type');
+            for(let c of txt) { el.value += c; await new Promise(r => setTimeout(r, 30)); }
+            el.parentElement.classList.remove('cursor-type');
+            await new Promise(r => setTimeout(r, 400));
         }
 
-        function abrirCheckoutV3(prod, monto) {
-            window.tempProd = prod;
-            window.tempMonto = monto;
-            document.getElementById('monto-display').innerText = "$" + monto;
-            document.getElementById('modal-checkout').classList.remove('hidden');
-        }
-
-        // --- GENERACIÓN DE DOCUMENTOS (LOS 3 PDFS CRÍTICOS) ---
-
-        function confirmarYGenerarLegajo() {
+        // PDFS
+        function downloadLegal() {
             const doc = new jsPDF();
-            const rs = document.getElementById('check-rs').value || 'Empresa Adquirente';
-            const dir = document.getElementById('check-dir').value || 'Planta Industrial Norte';
-            const idOp = "NX-" + Math.floor(100000 + Math.random() * 899999);
-
-            // Cabecera Profesional
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 55, 'F');
-            doc.setTextColor(255, 255, 255); doc.setFontSize(26); doc.setFont("helvetica", "bold");
-            doc.text("NEXUS | LEGAJO DIGITAL", 20, 30);
+            doc.setFont("helvetica", "bold"); doc.setFontSize(16);
+            doc.text("DICTAMEN LEGAL: ARBITRAJE TECNOLÓGICO NEXUS", 20, 20);
             doc.setFontSize(10); doc.setFont("helvetica", "normal");
-            doc.text("CERTIFICADO DE OPERACIÓN B2B PROTEGIDA POR ESCROW", 20, 42);
-            
-            // Cuerpo
-            doc.setTextColor(40, 40, 40); doc.setFontSize(10);
-            doc.text(`ID TRANSACCIÓN: ${idOp}`, 135, 75);
-            doc.text(`FECHA DE EMISIÓN: ${new Date().toLocaleDateString()}`, 135, 82);
-            doc.line(20, 88, 190, 88);
-            
-            doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.text("1. RESUMEN DE LA TRANSACCIÓN", 20, 100);
-            doc.setFont("helvetica", "normal"); doc.setFontSize(11);
-            doc.text(`• Activo Industrial: ${window.tempProd}`, 25, 112);
-            doc.text(`• Monto Garantizado: USD ${window.tempMonto}`, 25, 120);
-            doc.text(`• Comprador: ${rs}`, 25, 128);
-            doc.text(`• Destino de Entrega: ${dir}`, 25, 136);
-
-            // Bloque Legal
-            doc.setFillColor(248, 250, 252); doc.rect(20, 150, 170, 45, 'F');
-            doc.setFont("helvetica", "bold"); doc.text("2. PROTOCOLO DE GARANTÍA", 25, 162);
-            doc.setFontSize(9); doc.setFont("helvetica", "normal");
-            const txt = "Los fondos de esta operación se encuentran en custodia inmutable vía Smart Contract. El pago solo será liberado al confirmarse la entrega técnica mediante el Protocolo de Arbitraje IA de Nexus. Este documento es inalterable.";
-            doc.text(doc.splitTextToSize(txt, 160), 25, 170);
-
-            // Pie de página (Hash)
-            doc.setFontSize(8); doc.setTextColor(150, 150, 150);
-            doc.text("HASH DE INTEGRIDAD SHA-256: 983e02ab694c3ee5d2002dd096d893414cf431ac", 20, 220);
-            
-            doc.save(`Nexus_Legajo_${idOp}.pdf`);
-            document.getElementById('modal-checkout').classList.add('hidden');
-        }
-
-        function descargarDictamenLegal() {
-            const doc = new jsPDF();
-            doc.setFont("helvetica", "bold"); doc.setFontSize(18);
-            doc.text("DICTAMEN DE ARBITRAJE TECNOLÓGICO", 20, 25);
-            doc.setFontSize(11); doc.setFont("helvetica", "normal");
-            const intro = "Para el departamento legal: Nexus opera bajo el marco de la Ley de Arbitraje Comercial.";
-            const cuerpo = "A diferencia de un juicio comercial tradicional que puede durar años, Nexus utiliza un 'Perito Algorítmico'. Al operar en la plataforma, las partes aceptan que la IA valide los hechos técnicos objetivos. Si los requerimientos del Legajo se cumplen, el contrato se ejecuta. Es una solución legalmente vinculante, privada y de alta velocidad.";
-            doc.text(doc.splitTextToSize(intro, 170), 20, 45);
-            doc.setFont("helvetica", "bold"); doc.text("VALIDEZ JURÍDICA", 20, 65);
-            doc.setFont("helvetica", "normal");
-            doc.text(doc.splitTextToSize(cuerpo, 170), 20, 75);
+            const txt = `Este documento describe el marco de seguridad jurídica para departamentos legales. Nexus no es solo una plataforma de anuncios; es un sistema de ejecución de contratos basado en la Ley de Arbitraje Comercial.\n\nTradicionalmente, un conflicto B2B se resuelve en juzgados durante años. Nexus reemplaza la burocracia por un "Perito Técnico Algorítmico". Al operar en Nexus, ambas partes aceptan que nuestra IA valide los hechos objetivos (ej. ¿Se entregó el manual? ¿El remito está firmado?). Si la IA confirma la recepción, el pago se libera. Es una solución privada, rápida y con validez de contrato entre partes.\n\nPROCESO DE VALIDACIÓN DE HECHOS OBJETIVOS: La IA de Nexus ejecuta una triagulación de datos basada en: 1. OCR (Reconocimiento Óptico) de remitos físicos firmados. 2. Validación de geoposicionamiento de activos y logística. 3. Cotejo de firmas digitales inmutables. Esta validación técnica se constituye como prueba pericial definitiva para la liberación del Escrow.`;
+            doc.text(doc.splitTextToSize(txt, 170), 20, 40);
             doc.save("Nexus_Dictamen_Legal.pdf");
         }
 
-        function descargarWhitepaperTecnico() {
+        function downloadTech() {
             const doc = new jsPDF();
-            doc.setFont("helvetica", "bold"); doc.setFontSize(18);
-            doc.text("PROTOCOLO DE SEGURIDAD DE FONDOS", 20, 25);
-            doc.setFontSize(11); doc.setFont("helvetica", "normal");
-            const p1 = "Para Auditoría y CFO: El capital de la transacción no ingresa al patrimonio de Nexus, eliminando riesgos operativos o de embargos.";
-            const p2 = "Utilizamos un Smart Contract No-Custodial. El dinero reside en un programa autónomo blindado por el Hash SHA-256. El pago solo tiene dos destinos posibles: el vendedor (tras validación de entrega) o el comprador (por vencimiento de plazo). Costo de custodia: USD 0,00.";
-            doc.text(doc.splitTextToSize(p1, 170), 20, 45);
-            doc.setFont("helvetica", "bold"); doc.text("SEGURIDAD MATEMÁTICA", 20, 65);
-            doc.setFont("helvetica", "normal");
-            doc.text(doc.splitTextToSize(p2, 170), 20, 75);
+            doc.setFont("helvetica", "bold"); doc.setFontSize(16);
+            doc.text("PROTOCOLO DE SEGURIDAD Y CUSTODIA DE FONDOS", 20, 20);
+            doc.setFontSize(10); doc.setFont("helvetica", "normal");
+            const txt = `1. Custodia Inmutable (Escrow Digital)\n2. Garantía SHA-256 (Hash)\n\nDirigido a directores financieros (CFO) y auditores de sistemas. Explica por qué su dinero está más seguro en Nexus que en una transferencia común.\n\nNexus no guarda su dinero en una cuenta bancaria propia (donde podría ser embargado o malversado). Los fondos se bloquean en un Smart Contract: un programa autónomo que nadie puede tocar. El dinero solo tiene dos caminos: ir al vendedor si la IA confirma la entrega, o volver al comprador si el plazo expira sin éxito.\n\nUsamos el protocolo SHA-256 (el mismo que usan los bancos para encriptar claves). Este protocolo genera una "huella digital" única de su transacción. Si alguien intentara cambiar un solo dato del contrato, la huella cambiaría y el sistema bloquearía la operación. Esto garantiza Integridad Total de los fondos a costo de custodia cero.`;
+            doc.text(doc.splitTextToSize(txt, 170), 20, 40);
             doc.save("Nexus_Seguridad_Tecnica.pdf");
         }
 
-        // --- EL FLUJO COMPLETO DE LA DEMO 3.0 ---
+        function startCheckout(p, m) {
+            window.tempP = p; window.tempM = m;
+            document.getElementById('modal-escrow').classList.remove('hidden');
+        }
 
-        async function iniciarDemoMaestra() {
-            cambiarSeccion('vendedor');
-            await step("IDENTIDAD FISCAL", "PASO 1: Validamos a las empresas mediante sus credenciales fiscales. Esto garantiza que el marketplace sea exclusivamente B2B.", "fa-building-shield");
-            await escribir('vender-rs', 'Industrias Metalúrgicas Siemens S.A.');
-            await escribir('vender-cuit', '30-50000000-1');
+        async function finalizarTodo() {
+            const log = document.getElementById('contract-status');
+            log.innerText = "> VALIDANDO FIRMAS..."; await new Promise(r=>setTimeout(r, 800));
+            log.innerText = "> GENERANDO BLOQUE BLOCKCHAIN..."; await new Promise(r=>setTimeout(r, 800));
+            document.getElementById('contract-hash').innerText = "HASH: 983e02ab694c3ee5d2002dd096d893414cf431ac";
+            log.innerText = "> ESCROW ACTIVADO: FONDOS PROTEGIDOS";
+            await new Promise(r=>setTimeout(r, 1000));
+            
+            const doc = new jsPDF();
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 50, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.text("NEXUS | LEGAJO DIGITAL", 20, 30);
+            doc.setTextColor(40,40,40); doc.setFontSize(10);
+            doc.text(`ACTIVO: ${window.tempP}`, 20, 70);
+            doc.text(`MONTO: USD ${window.tempM}`, 20, 78);
+            doc.text(`COMPRADOR: ${document.getElementById('check-rs').value}`, 20, 86);
+            doc.text(`HASH SHA-256: 983e02ab694c3ee5d2002dd096d893414cf431ac`, 20, 200);
+            doc.save("Legajo_Nexus_Inmutable.pdf");
+            document.getElementById('modal-escrow').classList.add('hidden');
+        }
 
-            await step("DUE DILIGENCE", "PASO 2: El vendedor carga la documentación técnica del activo. La IA de Nexus audita estos documentos para el futuro comprador.", "fa-file-shield");
-            document.getElementById('vender-docs').classList.remove('opacity-40');
-            document.getElementById('doc-status-icon').className = "fa-solid fa-file-pdf text-6xl text-red-500 animate-pulse";
-            document.getElementById('doc-status-text').innerText = "Manual_Tecnico_Verificado.pdf (Cargado)";
-            document.getElementById('doc-status-text').classList.replace('text-slate-400', 'text-slate-900');
+        // --- MASTER FLOW 4.0 ---
+        async function runMasterDemo() {
+            view('vender');
+            await step("Bienvenido Germán. Vamos a demostrar por qué Nexus es el estándar industrial. Primero: Identidad Fiscal.");
+            await type('v-rs', 'Industrias Metalúrgicas Siemens S.A.');
+            await type('v-cuit', '30-50000000-1');
 
-            cambiarSeccion('comprador');
-            await step("LOCALIZACIÓN", "PASO 3: El comprador busca activos. Nuestra IA ya otorgó un puntaje de confianza basado en la documentación anterior.", "fa-magnifying-glass-chart");
-            await escribir('main-search', 'Motor Siemens 5HP Industrial');
-            document.getElementById('ai-verified-badge').classList.remove('hidden');
+            await step("Ahora el proceso de VALIDACIÓN. No solo subimos archivos; la IA los audita en tiempo real.", "fa-file-shield");
+            document.getElementById('v-upload').classList.remove('opacity-40');
+            document.getElementById('v-ai-analysis').classList.remove('hidden');
+            document.getElementById('v-up-ico').className = "fa-solid fa-file-pdf text-5xl text-blue-600";
+            document.getElementById('v-up-txt').innerText = "Manual_Siemens_5HP.pdf";
+            const bar = document.getElementById('ai-progress');
+            bar.style.width = '100%';
+            await new Promise(r=>setTimeout(r, 1500));
+            document.getElementById('v-up-txt').innerText = "AUDITORÍA COMPLETADA: ACTIVO VERIFICADO";
+            document.getElementById('v-up-txt').classList.replace('text-slate-400', 'text-emerald-600');
 
-            await step("BLOQUEO DE FONDOS", "PASO 4: Iniciamos el Escrow. El dinero queda protegido por código, no por personas.", "fa-vault");
-            abrirCheckoutV3('Motor Siemens 5HP', 5000);
-            await escribir('check-rs', 'Fábrica de Aceros del Sur SRL');
-            await escribir('check-dir', 'Parque Industrial Pilar, Nave 12');
+            view('comprar');
+            await step("Cambiamos al rol de Comprador. Buscaremos el activo que acabamos de validar.");
+            await type('c-search', 'Motor Siemens 5HP Industrial');
+            document.getElementById('c-verified').classList.remove('hidden');
 
-            await step("EMISIÓN DE LEGAJO", "PASO 5: Al confirmar, emitimos el Legajo Inmutable. Este es el contrato digital blindado por matemática.", "fa-file-invoice-dollar");
-            confirmarYGenerarLegajo();
+            await step("PROCESO DE PAGO Y ESCROW. Los fondos se bloquean por código, no por intermediarios.", "fa-vault");
+            startCheckout('Motor Siemens 5HP', 5000);
+            await type('check-rs', 'Aceros del Pilar S.R.L.');
+            await type('check-dir', 'Parque Industrial, Nave 4');
 
-            // CIERRE DIDÁCTICO PARA ABOGADOS Y CFOs
-            await step("ARBITRAJE IA", "DIFERENCIAL: Nuestra IA actúa como un 'Escribano Digital'. Resuelve cualquier disputa en segundos basándose en la data, no en burocracia.", "fa-gavel");
-            await step("CUSTODIA SEGURA", "SEGURIDAD: Sus fondos están en un programa autónomo, no en Nexus. Costo de custodia: USD 0.00 mediante eficiencia Blockchain.", "fa-shield-halved");
-            await step("DOCUMENTACIÓN TÉCNICA", "REPOSITORIO: Debajo puede descargar los dictámenes detallados para que sus asesores legales y financieros revisen el protocolo.", "fa-fingerprint", true);
+            await step("Para el Departamento Legal y el CFO: Nexus entrega documentos técnicos-legales que blindan la operación.", "fa-fingerprint", "Seguridad Patrimonial", true);
+            
+            await step("Finalmente, emitimos el Legajo. El contrato inmutable que certifica que el dinero está seguro.", "fa-file-invoice-dollar");
+            await finalizarTodo();
 
-            await step("DEMO FINALIZADA", "Nexus ha creado un entorno donde la confianza es matemática e inmediata. ¡Gracias, German!", "fa-circle-check");
+            await step("Demo Finalizada. Nexus: Tecnología, Ley y Matemática al servicio de la industria.", "fa-circle-check", "Éxito");
         }
     </script>
 </body>
