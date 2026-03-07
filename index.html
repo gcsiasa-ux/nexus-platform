@@ -17,9 +17,9 @@
         
         #demo-guia {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 200; background: #1e293b; color: white; padding: 30px; border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border-left: 8px solid #fbbf24;
-            display: none; max-width: 450px; width: 90%; text-align: center;
+            z-index: 200; background: #1e293b; color: white; padding: 35px; border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border-left: 8px solid #3b82f6;
+            display: none; max-width: 500px; width: 90%; text-align: center;
         }
     </style>
 </head>
@@ -27,10 +27,14 @@
 
     <div id="demo-guia">
         <div class="mb-6">
-            <i class="fa-solid fa-microchip text-amber-400 text-3xl mb-3"></i>
+            <i id="guia-icono" class="fa-solid fa-shield-halved text-blue-400 text-4xl mb-4"></i>
             <p id="guia-texto" class="font-bold text-lg leading-relaxed"></p>
+            <div id="guia-links" class="mt-4 hidden">
+                <a href="#" onclick="alert('Descargando Dictamen Legal de Arbitraje IA...')" class="text-blue-400 underline text-sm block mb-2 font-bold"><i class="fa-solid fa-file-contract mr-2"></i> Descargar Dictamen Legal para Asesores</a>
+                <a href="#" onclick="alert('Descargando Whitepaper: Protocolo de Prueba de Reserva...')" class="text-blue-400 underline text-sm block font-bold"><i class="fa-solid fa-code mr-2"></i> Descargar Especificaciones Técnicas SHA-256</a>
+            </div>
         </div>
-        <button id="btn-continuar" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-black uppercase text-xs tracking-widest shadow-lg">
+        <button id="btn-continuar" class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded-xl font-black uppercase text-xs tracking-widest shadow-lg transition-all active:scale-95">
             Continuar <i class="fa-solid fa-chevron-right ml-2"></i>
         </button>
     </div>
@@ -40,7 +44,7 @@
             <div class="w-10 h-10 bg-blue-800 rounded-xl flex items-center justify-center text-white font-black text-xl">N</div>
             <div class="text-2xl font-black tracking-tighter uppercase">Nexus<span class="text-blue-700">.Market</span></div>
         </div>
-        <button onclick="ejecutarPresentacionMaestra()" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest shadow-lg transition-all active:scale-95">
+        <button onclick="ejecutarPresentacionV3()" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest shadow-lg transition-all active:scale-95">
             <i class="fa-solid fa-play mr-2"></i> INICIAR PRESENTACION
         </button>
     </nav>
@@ -51,10 +55,9 @@
     </div>
 
     <main class="max-w-5xl mx-auto p-6">
-        
         <div id="view-vender" class="hidden space-y-6">
             <div class="bg-white p-8 rounded-3xl border shadow-sm">
-                <h2 class="text-lg font-black mb-6 uppercase text-blue-800 tracking-widest">Identidad Fiscal Vendedor</h2>
+                <h2 class="text-lg font-black mb-6 uppercase text-blue-800 tracking-widest text-center">Identidad Fiscal Vendedor</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input type="text" id="vender-rs" placeholder="Razón Social" class="p-4 bg-slate-50 rounded-xl outline-none font-bold border">
                     <input type="text" id="vender-cuit" placeholder="CUIT / Tax ID" class="p-4 bg-slate-50 rounded-xl outline-none font-bold border">
@@ -94,7 +97,7 @@
         <div id="modal-checkout" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-4">
             <div class="bg-white max-w-md w-full rounded-[2.5rem] p-10 shadow-2xl relative">
                 <h2 class="text-3xl font-black mb-2">Checkout</h2>
-                <p class="text-slate-400 font-bold uppercase text-[9px] tracking-[0.2em] mb-8">Depósito en Escrow Digital</p>
+                <p class="text-slate-400 font-bold uppercase text-[9px] tracking-[0.2em] mb-8">Escrow Digital vía Smart Contract</p>
                 <div class="space-y-4 mb-8">
                     <input type="text" id="check-rs" placeholder="Empresa Compradora" class="w-full p-4 border rounded-2xl font-bold">
                     <input type="text" id="check-dir" placeholder="Planta de Entrega" class="w-full p-4 border rounded-2xl font-bold">
@@ -115,14 +118,17 @@
                 callbackContinuar = resolve;
                 document.getElementById('btn-continuar').onclick = () => {
                     document.getElementById('demo-guia').style.display = 'none';
+                    document.getElementById('guia-links').classList.add('hidden');
                     resolve();
                 };
             });
         }
 
-        async function mostrarPopUp(txt) {
+        async function mostrarPopUp(txt, icono = 'fa-shield-halved', mostrarLinks = false) {
             const guia = document.getElementById('demo-guia');
             document.getElementById('guia-texto').innerText = txt;
+            document.getElementById('guia-icono').className = `fa-solid ${icono} text-blue-400 text-4xl mb-4`;
+            if(mostrarLinks) document.getElementById('guia-links').classList.remove('hidden');
             guia.style.display = 'block';
             await esperarContinuar();
         }
@@ -153,7 +159,6 @@
             document.getElementById('modal-checkout').classList.remove('hidden');
         }
 
-        // --- EL LEGAJO PROFESIONAL RESTAURADO ---
         function descargarLegajoPremium() {
             try {
                 const { jsPDF } = window.jspdf;
@@ -162,88 +167,67 @@
                 const dir = document.getElementById('check-dir').value || 'Planta Industrial Norte';
                 const idTrans = "NX-" + Math.floor(100000 + Math.random() * 900000);
 
-                // Cabecera Profesional (Azul)
-                doc.setFillColor(30, 58, 138); 
-                doc.rect(0, 0, 210, 45, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(22);
+                doc.setFillColor(30, 58, 138); doc.rect(0, 0, 210, 45, 'F');
+                doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(22);
                 doc.text("NEXUS AI | LEGAJO DIGITAL", 20, 25);
-                doc.setFontSize(10);
-                doc.setFont("helvetica", "normal");
-                doc.text("CERTIFICADO DE OPERACIÓN B2B PROTEGIDA POR ESCROW", 20, 33);
-                
-                // Cuerpo del documento
-                doc.setTextColor(40, 40, 40);
-                doc.setFontSize(10);
-                doc.text(`ID OPERACIÓN: ${idTrans}`, 140, 60);
+                doc.setFontSize(10); doc.text("CERTIFICADO DE OPERACIÓN B2B PROTEGIDA POR ESCROW", 20, 33);
+                doc.setTextColor(40, 40, 40); doc.text(`ID OPERACIÓN: ${idTrans}`, 140, 60);
                 doc.text(`FECHA: ${new Date().toLocaleString()}`, 140, 65);
                 doc.line(20, 75, 190, 75);
-                
-                doc.setFont("helvetica", "bold");
-                doc.text("RESUMEN DE LA TRANSACCIÓN:", 20, 85);
+                doc.setFont("helvetica", "bold"); doc.text("RESUMEN DE LA TRANSACCIÓN:", 20, 85);
                 doc.setFont("helvetica", "normal");
                 doc.text(`Activo Industrial: ${window.nomP}`, 25, 95);
                 doc.text(`Valor de Mercado: USD ${window.monP}`, 25, 102);
                 doc.text(`Comprador: ${rs}`, 25, 109);
                 doc.text(`Punto de Entrega: ${dir}`, 25, 116);
-                
-                // Cláusula de Arbitraje (El diferencial comercial)
-                doc.setFillColor(245, 247, 250);
-                doc.rect(20, 130, 170, 35, 'F');
-                doc.setFont("helvetica", "bold");
-                doc.text("CLÁUSULA DE ARBITRAJE IA Y ESCROW:", 25, 140);
-                doc.setFontSize(8);
-                doc.setFont("helvetica", "normal");
-                const clausula = "Los fondos se encuentran en custodia inmutable. La liberación al vendedor se procesará tras la validación de recepción del activo mediante el protocolo Nexus AI o ante resolución firme de arbitraje digital.";
+                doc.setFillColor(245, 247, 250); doc.rect(20, 130, 170, 35, 'F');
+                doc.setFont("helvetica", "bold"); doc.text("CLÁUSULA DE ARBITRAJE IA Y ESCROW:", 25, 140);
+                doc.setFontSize(8); doc.setFont("helvetica", "normal");
+                const clausula = "Los fondos se encuentran en custodia inmutable vía Smart Contract. La liberación se procesará tras validación de recepción por Nexus AI. El Hash SHA-256 constituye prueba de integridad.";
                 doc.text(doc.splitTextToSize(clausula, 160), 25, 146);
-                
-                // Pie de página con Hash
-                doc.setFontSize(7);
-                doc.setTextColor(180, 180, 180);
-                const hash = Array.from({length:40}, () => Math.floor(Math.random()*16).toString(16)).join('');
-                doc.text(`HASH DE SEGURIDAD SHA-256 (INMUTABLE): ${hash}`, 20, 200);
-
+                doc.setFontSize(7); doc.setTextColor(180, 180, 180);
+                doc.text(`HASH SHA-256: 983e02ab694c3ee5d2002dd096d893414cf431ac`, 20, 200);
                 doc.save(`Legajo_Nexus_${idTrans}.pdf`);
                 document.getElementById('modal-checkout').classList.add('hidden');
-            } catch (err) { alert("Error en Legajo: " + err.message); }
+            } catch (err) { alert("Error: " + err.message); }
         }
 
-        // --- LA PRESENTACIÓN SINCRONIZADA ---
-        async function ejecutarPresentacionMaestra() {
-            // Paso 1: Vendedor
+        async function ejecutarPresentacionV3() {
+            // -- FLUJO BASE IMPECABLE --
             cambiarSeccion('vender');
-            await mostrarPopUp("🏢 PASO 1: El vendedor registra su empresa. Nexus valida su identidad fiscal automáticamente.");
+            await mostrarPopUp("🏢 PASO 1: Registro e Identidad Fiscal. Nexus valida al vendedor para asegurar el cumplimiento B2B.", "fa-building");
             await animarEscritura('vender-rs', 'Industrias Siemens Argentina');
             await animarEscritura('vender-cuit', '30-50000000-1');
             
-            // Paso 2: Docs
-            await mostrarPopUp("📄 PASO 2: Carga de documentación técnica. Vital para que el comprador audite el activo.");
+            await mostrarPopUp("📄 PASO 2: Due Diligence Técnico. Se carga el historial y manuales del activo para transparencia total.", "fa-file-shield");
             document.getElementById('vender-docs').classList.remove('opacity-40');
             document.getElementById('icon-doc').classList.replace('text-slate-300', 'text-red-500');
             document.getElementById('text-doc').innerText = "Manual_Tecnico_Siemens_5HP.pdf (Cargado)";
             document.getElementById('text-doc').classList.replace('text-slate-400', 'text-slate-800');
 
-            // Paso 3: Comprador
             cambiarSeccion('comprar');
-            await mostrarPopUp("🔍 PASO 3: Un comprador busca activos específicos. El sistema filtra por verificación real.");
+            await mostrarPopUp("🔍 PASO 3: Localización de Activos. El comprador accede solo a equipos con documentación verificada.", "fa-magnifying-glass-chart");
             await animarEscritura('main-search', 'Motor Siemens 5HP Industrial');
 
-            // Paso 4: Trust
-            await mostrarPopUp("🤖 PASO 4: La IA de Nexus analiza los documentos y otorga un Score de Confianza (Trust Score).");
+            await mostrarPopUp("🤖 PASO 4: Auditoría de IA. Nuestra inteligencia otorga un Score de Confianza basado en la data cargada.", "fa-robot");
             document.getElementById('ai-rating').classList.remove('hidden');
             
-            // Paso 5: Escrow
-            await mostrarPopUp("🛡️ PASO 5: Iniciamos el Checkout. Nexus retiene los fondos en Escrow para seguridad total.");
+            await mostrarPopUp("🛡️ PASO 5: Bloqueo de Fondos (Escrow). Los fondos quedan protegidos por código, no por humanos.", "fa-lock");
             abrirCheckoutNexus('Motor Siemens 5HP', 5000);
             await animarEscritura('check-rs', 'Fábrica de Aceros Metalúrgicos SRL');
             await animarEscritura('check-dir', 'Parque Industrial Pilar, Nave 12');
             
-            // Paso 6: Legajo
-            await mostrarPopUp("📄 PASO FINAL: Generamos el Legajo Digital. Contiene el Hash de seguridad y validez de arbitraje.");
+            await mostrarPopUp("📄 PASO FINAL: Generación del Legajo. Un documento inmutable con validez legal y arbitraje automático.", "fa-file-circle-check");
             descargarLegajoPremium();
             
-            await mostrarPopUp("✅ PRESENTACIÓN FINALIZADA. El legajo profesional está en su carpeta de descargas.");
+            // -- NUEVA SECCIÓN DE EXPLICACIÓN FINANCIERA (EL RUIDO RESUELTO) --
+            await mostrarPopUp("🔒 SEGURIDAD: ¿Cómo garantizamos su dinero? Usamos Escrow Digital vía Smart Contracts. El costo de custodia para usted es USD 0.00.", "fa-vault");
+            
+            await mostrarPopUp("📜 CLÁUSULA DE ARBITRAJE IA: Es nuestro 'Escribano Digital'. La IA libera el pago solo cuando la entrega coincide con el Legajo. Sin demoras bancarias.", "fa-gavel");
+            
+            await mostrarPopUp("🛡️ HASH SHA-256: Es la huella digital inmutable de la operación. Puede compartir estos dictámenes con sus asesores legales aquí debajo.", "fa-fingerprint", true);
+
+            await mostrarPopUp("✅ PRESENTACIÓN FINALIZADA. Nexus: Tecnología aplicada a la confianza industrial.", "fa-circle-check");
         }
     </script>
 </body>
