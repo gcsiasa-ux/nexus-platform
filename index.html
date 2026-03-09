@@ -3,135 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Marketplace | B2B & B2C Professional</title>
+    <title>Nexus Marketplace | B2B & B2C V8.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { background-color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; color: #1e293b; }
+        body { background-color: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; color: #0f172a; }
+        
         .hidden { display: none !important; }
-        .tab-active { color: #2563eb; border-bottom: 3px solid #2563eb; font-weight: 800; }
+        .tab-active { color: #2563eb; border-bottom: 4px solid #2563eb; font-weight: 800; }
         
-        #guide-overlay {
-            position: fixed; bottom: 25px; right: 25px; z-index: 10000;
-            background: #0f172a; color: white; padding: 24px; border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 1px solid #334155;
-            max-width: 380px; width: 90%; display: none;
+        /* Botón de Demo con Feedback Visual Real */
+        .btn-demo {
+            background-color: #0f172a; color: white; transition: all 0.2s ease-in-out;
+            cursor: pointer; position: relative; overflow: hidden;
         }
+        .btn-demo:hover { background-color: #2563eb; transform: scale(1.05); shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .btn-demo:active { transform: scale(0.95); }
 
-        .nexus-card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; transition: all 0.3s ease; height: 100%; }
-        .nexus-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.1); }
-        
-        .pay-option { border: 2px solid #f1f5f9; border-radius: 16px; padding: 16px; cursor: pointer; transition: 0.2s; }
-        .pay-option:hover { border-color: #2563eb; background: #f0f7ff; }
-        .pay-selected { border-color: #2563eb; background: #eff6ff; }
+        .nexus-card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; transition: all 0.3s; }
+        .nexus-card:hover { border-color: #cbd5e1; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+
+        .pay-option { 
+            border: 2px solid #f1f5f9; border-radius: 20px; padding: 20px; 
+            cursor: pointer; transition: 0.2s; text-align: left;
+        }
+        .pay-option:hover { border-color: #2563eb; background: #f8fafc; }
+        .pay-selected { border-color: #2563eb; background: #eff6ff; border-width: 3px; }
+
+        #guide-overlay {
+            position: fixed; bottom: 30px; right: 30px; z-index: 10000;
+            background: #1e293b; color: white; padding: 25px; border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); width: 350px; display: none;
+        }
     </style>
 </head>
 <body>
 
-    <nav class="bg-white border-b sticky top-0 z-50 p-5">
+    <nav class="bg-white/90 backdrop-blur-md border-b sticky top-0 z-[100] p-5">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 bg-blue-600 rounded-2xl flex items-center justify-center text-white"><i class="fa-solid fa-layer-group"></i></div>
-                <span class="text-2xl font-extrabold uppercase italic tracking-tighter">Nexus<span class="text-blue-600">.Market</span></span>
+                <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tighter uppercase italic">Nexus<span class="text-blue-600">.Market</span></span>
             </div>
-            <button onclick="runProDemo()" class="bg-slate-900 text-white px-7 py-3 rounded-full font-extrabold text-[11px] uppercase tracking-widest shadow-xl">
-                <i class="fa-solid fa-play mr-2"></i> Iniciar Demo 8.2
+            <button id="main-demo-btn" onclick="startVersion83()" class="btn-demo px-8 py-3 rounded-full font-extrabold text-[11px] uppercase tracking-widest">
+                <i class="fa-solid fa-play mr-2"></i> Iniciar Demo 8.3
             </button>
         </div>
     </nav>
 
     <div id="guide-overlay">
         <div class="flex items-start gap-4 mb-5">
-            <i id="g-ico" class="fa-solid fa-microchip text-blue-400 text-2xl"></i>
+            <i id="g-ico" class="fa-solid fa-microchip text-blue-400 text-3xl"></i>
             <div>
-                <h4 id="g-tit" class="text-blue-400 font-extrabold text-[10px] uppercase tracking-widest">Nexus Core</h4>
-                <p id="g-txt" class="text-xs font-semibold text-slate-200"></p>
+                <h4 id="g-tit" class="text-blue-400 font-extrabold text-[10px] uppercase tracking-widest mb-1">Nexus System</h4>
+                <p id="g-txt" class="text-xs font-semibold leading-relaxed text-slate-200"></p>
             </div>
         </div>
-        <button id="g-btn" class="w-full bg-blue-600 py-4 rounded-xl font-extrabold text-[11px] uppercase text-white">Continuar</button>
+        <button id="g-btn" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-extrabold text-[11px] uppercase text-white shadow-lg transition-colors">Continuar</button>
     </div>
 
-    <div class="max-w-6xl mx-auto mt-10 flex gap-10 px-10 border-b">
-        <button id="t-v" onclick="switchView('v')" class="pb-4 text-[12px] font-extrabold uppercase tracking-widest text-slate-400">Vendedor</button>
-        <button id="t-c" onclick="switchView('c')" class="pb-4 text-[12px] font-extrabold uppercase tracking-widest text-slate-400">Comprador</button>
+    <div class="max-w-6xl mx-auto mt-10 flex gap-10 px-10 border-b border-slate-200">
+        <button id="t-c" onclick="switchTab('c')" class="tab-active pb-4 text-[12px] font-extrabold uppercase tracking-widest transition-all">Comprador (Market)</button>
+        <button id="t-v" onclick="switchTab('v')" class="pb-4 text-[12px] font-extrabold uppercase tracking-widest text-slate-400 transition-all">Vendedor (Carga)</button>
     </div>
 
     <main class="max-w-6xl mx-auto p-10">
-        <div id="v-view" class="hidden space-y-6">
-            <div class="nexus-card p-10">
-                <h3 class="font-extrabold uppercase text-xs mb-6 tracking-widest text-blue-900">Perfil de Empresa</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <input type="text" id="v-rs" placeholder="Razón Social" class="w-full p-4 bg-slate-50 rounded-xl border-2 border-transparent focus:border-blue-500 outline-none font-bold">
-                    <input type="text" id="v-cuit" placeholder="CUIT" class="w-full p-4 bg-slate-50 rounded-xl border-2 border-transparent focus:border-blue-500 outline-none font-bold">
+        
+        <div id="view-c" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="nexus-card p-8 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-[9px] font-black uppercase">B2B Auditado</span>
+                        <i class="fa-solid fa-industry text-slate-200 text-2xl"></i>
+                    </div>
+                    <h4 class="font-extrabold text-xl text-slate-900">Motor Siemens 5HP</h4>
+                    <p class="text-[11px] text-slate-400 font-bold mb-6">Siemens Argentina S.A.</p>
+                </div>
+                <div class="pt-6 border-t flex justify-between items-center">
+                    <span class="text-3xl font-extrabold text-slate-900">$5.000</span>
+                    <button onclick="initCheckout('Motor Siemens 5HP', 5000, 'Siemens Argentina S.A.')" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-extrabold text-[10px] uppercase hover:bg-blue-700 transition-colors">Conectar</button>
+                </div>
+            </div>
+
+            <div class="nexus-card p-8 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-[9px] font-black uppercase">B2B Auditado</span>
+                        <i class="fa-solid fa-bolt text-slate-200 text-2xl"></i>
+                    </div>
+                    <h4 class="font-extrabold text-xl text-slate-900">Transformador ABB</h4>
+                    <p class="text-[11px] text-slate-400 font-bold mb-6">ABB S.A.</p>
+                </div>
+                <div class="pt-6 border-t flex justify-between items-center">
+                    <span class="text-3xl font-extrabold text-slate-900">$12.400</span>
+                    <button onclick="initCheckout('Transformador ABB', 12400, 'ABB S.A.')" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-extrabold text-[10px] uppercase hover:bg-blue-700 transition-colors">Conectar</button>
+                </div>
+            </div>
+
+            <div class="nexus-card p-8 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-6">
+                        <span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-lg text-[9px] font-black uppercase italic">B2C Retail</span>
+                        <i class="fa-solid fa-keyboard text-slate-200 text-2xl"></i>
+                    </div>
+                    <h4 class="font-extrabold text-xl text-slate-900">Logitech MX Master</h4>
+                    <p class="text-[11px] text-slate-400 font-bold mb-6">Logitech Argentina</p>
+                </div>
+                <div class="pt-6 border-t flex justify-between items-center">
+                    <span class="text-3xl font-extrabold text-slate-900">$150</span>
+                    <button onclick="initCheckout('Logitech MX Master', 150, 'Logitech Argentina')" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-extrabold text-[10px] uppercase hover:bg-slate-800 transition-colors">Comprar</button>
                 </div>
             </div>
         </div>
 
-        <div id="c-view" class="space-y-10">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="nexus-card p-8 flex flex-col justify-between">
-                    <div>
-                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[9px] font-black uppercase">B2B Auditado</span>
-                        <h4 class="font-extrabold text-xl mt-4">Motor Siemens 5HP</h4>
-                        <p class="text-[10px] text-slate-400 font-bold mb-6">Vendedor: Siemens S.A.</p>
-                    </div>
-                    <div class="pt-6 border-t flex justify-between items-center">
-                        <span class="text-2xl font-extrabold">$5.000</span>
-                        <button onclick="openCheckout('Motor Siemens 5HP', 5000, 'Siemens S.A.')" class="bg-blue-600 text-white px-5 py-3 rounded-xl font-extrabold text-[9px] uppercase">Conectar</button>
-                    </div>
-                </div>
-                <div class="nexus-card p-8 flex flex-col justify-between">
-                    <div>
-                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[9px] font-black uppercase">B2B Auditado</span>
-                        <h4 class="font-extrabold text-xl mt-4">Transformador ABB</h4>
-                        <p class="text-[10px] text-slate-400 font-bold mb-6">Vendedor: ABB S.A.</p>
-                    </div>
-                    <div class="pt-6 border-t flex justify-between items-center">
-                        <span class="text-2xl font-extrabold">$12.400</span>
-                        <button onclick="openCheckout('Transformador ABB', 12400, 'ABB S.A.')" class="bg-blue-600 text-white px-5 py-3 rounded-xl font-extrabold text-[9px] uppercase">Conectar</button>
-                    </div>
-                </div>
-                <div class="nexus-card p-8 flex flex-col justify-between">
-                    <div>
-                        <span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-[9px] font-black uppercase italic">B2C Retail</span>
-                        <h4 class="font-extrabold text-xl mt-4">Logitech MX Master</h4>
-                        <p class="text-[10px] text-slate-400 font-bold mb-6">Vendedor: Logitech Arg.</p>
-                    </div>
-                    <div class="pt-6 border-t flex justify-between items-center">
-                        <span class="text-2xl font-extrabold">$150</span>
-                        <button onclick="openCheckout('Logitech MX Master', 150, 'Logitech Arg.')" class="bg-slate-900 text-white px-5 py-3 rounded-xl font-extrabold text-[9px] uppercase">Comprar</button>
-                    </div>
+        <div id="view-v" class="hidden space-y-6">
+            <div class="nexus-card p-10 max-w-2xl mx-auto">
+                <h3 class="font-extrabold uppercase text-xs mb-8 tracking-widest text-blue-900 underline decoration-4 decoration-blue-100 underline-offset-8">Nueva Publicación</h3>
+                <div class="space-y-4">
+                    <input type="text" placeholder="Razón Social" class="w-full p-4 bg-slate-50 rounded-xl border-2 border-transparent focus:border-blue-500 outline-none font-bold">
+                    <input type="text" placeholder="CUIT" class="w-full p-4 bg-slate-50 rounded-xl border-2 border-transparent focus:border-blue-500 outline-none font-bold">
+                    <div class="border-4 border-dashed border-slate-100 rounded-3xl p-12 text-center text-slate-300 font-black uppercase text-xs">Arrastre archivos de auditoría</div>
                 </div>
             </div>
         </div>
 
-        <div id="modal-checkout" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden z-[1000] flex items-center justify-center p-4">
-            <div class="bg-white max-w-xl w-full rounded-[2.5rem] p-12 text-center shadow-2xl">
+        <div id="modal-pay" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md hidden z-[1000] flex items-center justify-center p-6">
+            <div class="bg-white max-w-xl w-full rounded-[3rem] p-12 text-center shadow-2xl relative">
                 
-                <div id="step-1">
-                    <h3 class="text-2xl font-extrabold mb-10">Orden de Conexión</h3>
-                    <div class="bg-slate-50 p-6 rounded-2xl mb-8 text-left space-y-3">
-                        <div class="flex justify-between text-xs font-bold text-slate-400 uppercase"><span>Producto</span><span id="txt-prod" class="text-slate-900"></span></div>
-                        <div class="flex justify-between text-xs font-bold text-slate-400 uppercase"><span>Vendedor</span><span id="txt-vend" class="text-slate-900"></span></div>
-                        <div class="flex justify-between text-xs font-extrabold border-t pt-3"><span>Comisión (5%)</span><span id="txt-fee" class="text-emerald-600"></span></div>
+                <div id="pay-step-1">
+                    <h3 class="text-3xl font-extrabold mb-8 tracking-tighter">Orden de Conexión</h3>
+                    <div class="bg-slate-50 p-6 rounded-2xl mb-8 text-left space-y-2">
+                        <p class="text-[10px] font-black text-slate-400 uppercase">Resumen</p>
+                        <div class="flex justify-between font-bold text-sm"><span>Producto:</span><span id="p-name" class="text-blue-900"></span></div>
+                        <div class="flex justify-between font-bold text-sm"><span>Vendedor:</span><span id="p-vend" class="text-blue-900"></span></div>
+                        <div class="flex justify-between font-extrabold text-lg pt-4 border-t mt-2"><span>Fee (5%):</span><span id="p-fee" class="text-emerald-600"></span></div>
                     </div>
-                    <input type="text" id="buyer-name" placeholder="Tu Empresa / Nombre" class="w-full p-4 bg-slate-100 rounded-xl mb-8 font-bold outline-none">
-                    <button onclick="showPayments()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-extrabold uppercase text-xs">Confirmar y Elegir Pago</button>
+                    <input type="text" id="buyer-input" placeholder="Nombre del Comprador / Empresa" class="w-full p-4 bg-slate-100 rounded-xl mb-8 font-bold outline-none text-center">
+                    <button onclick="goToPayments()" class="w-full bg-blue-600 text-white py-6 rounded-2xl font-extrabold uppercase text-xs shadow-xl shadow-blue-200 active:scale-95 transition-all">Generar y Elegir Pago</button>
                 </div>
 
-                <div id="step-2" class="hidden">
-                    <h3 class="text-2xl font-extrabold mb-8">Seleccione Forma de Pago</h3>
-                    <div class="space-y-3 mb-10">
-                        <div class="pay-option flex items-center gap-4 text-left" onclick="selectPay(this)">
-                            <i class="fa-solid fa-building-columns text-blue-600"></i>
-                            <div><p class="text-sm font-bold">Transferencia Bancaria</p><p class="text-[10px] text-slate-400">0% Recargo - Inmediato</p></div>
+                <div id="pay-step-2" class="hidden">
+                    <h3 class="text-2xl font-extrabold mb-8">Método de Liquidación</h3>
+                    <div class="space-y-4 mb-10">
+                        <div class="pay-option flex items-center gap-5" onclick="selectMethod(this)">
+                            <i class="fa-solid fa-university text-2xl text-blue-600"></i>
+                            <div><p class="font-extrabold text-sm">Transferencia CBU/ALIAS</p><p class="text-[10px] text-slate-400 font-bold">Acreditación Inmediata</p></div>
                         </div>
-                        <div class="pay-option flex items-center gap-4 text-left" onclick="selectPay(this)">
-                            <i class="fa-solid fa-file-invoice-dollar text-emerald-600"></i>
-                            <div><p class="text-sm font-bold">E-Cheq (30/60 días)</p><p class="text-[10px] text-slate-400">Sujeto a calificación</p></div>
+                        <div class="pay-option flex items-center gap-5" onclick="selectMethod(this)">
+                            <i class="fa-solid fa-file-contract text-2xl text-emerald-600"></i>
+                            <div><p class="font-extrabold text-sm">E-Cheq a 30/60 días</p><p class="text-[10px] text-slate-400 font-bold">Pago diferido B2B</p></div>
                         </div>
-                        <div class="pay-option flex items-center gap-4 text-left" onclick="selectPay(this)">
-                            <i class="fa-solid fa-coins text-amber-500"></i>
-                            <div><p class="text-sm font-bold">Tokenización Nexus</p><p class="text-[10px]
+                        <div class="pay-option flex items-center gap-5" onclick="selectMethod(this)">
+                            <i class="fa-solid fa-microchip text-2xl text-amber-500"></i>
+                            <div><p class="font-extrabold text-sm">Tokenización Nexus</p><p class="text-[10px] text-slate-400 font-bold">Activos Digitales</p></div>
+                        </div>
+                    </div>
+                    <button onclick="finishCheckout()" class="w-full bg-slate-900 text-white py-6 rounded-2xl font-extrabold uppercase text-xs shadow-2xl active:scale-95 transition-all">Confirmar Operación</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+        let data = {};
+
+        function switchTab(t) {
+            document.getElementById('view-c').classList.toggle('hidden', t !== 'c');
+            document.getElementById('view-v').classList.toggle('hidden', t === 'c');
+            document.getElementById('t-c').className = t === 'c' ? 'tab-active pb-4 text-[12px] font-extrabold uppercase tracking-widest' : 'pb-4 text-[12px] font-extrabold uppercase tracking-widest text-slate-400';
+            document.getElementById('t-v').className = t === 'v' ? 'tab-active pb-4 text-[12px] font-extrabold uppercase tracking-widest' : 'pb-4 text-[12px] font-extrabold uppercase tracking-widest text-slate-400';
+        }
+
+        async function triggerGuide(tit, txt, ico='fa-microchip') {
+            document.getElementById('g-tit').innerText = tit;
+            document.getElementById('g-txt').innerText = txt;
+            document.getElementById('g-ico').className = `fa-solid ${ico} text-blue-400 text-3xl`;
+            document.getElementById('guide-overlay').style.display = 'block';
+            return new Promise(resolve => {
+                document.getElementById('g-btn').onclick = () => {
+                    document.getElementById('guide-overlay').style.display = 'none';
+                    resolve();
+                };
+            });
+        }
+
+        function initCheckout(p, pr, v) {
+            data = { p, pr, v };
+            document.getElementById('p-name').innerText = p;
+            document.getElementById('p-vend').innerText = v;
+            document.getElementById('p-fee').innerText = "$" + (pr * 0.05).toFixed(0);
+            document.getElementById('modal-pay').classList.remove('hidden');
+            document.getElementById('pay-step-1').classList.remove('hidden');
+            document.getElementById('pay-step-2').classList.add('hidden');
+        }
+
+        function goToPayments() {
+            document.getElementById('pay-step-1').classList.add('hidden');
+            document.getElementById('pay-step-2').classList.remove('hidden');
+        }
+
+        function selectMethod(el) {
+            document.querySelectorAll('.pay-option').forEach(opt => opt.classList.remove('pay-selected'));
+            el.classList.add('pay-selected');
+        }
+
+        function finishCheckout() {
+            document.getElementById('modal-pay').classList.add('hidden');
+            const doc = new jsPDF();
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 50, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(20); doc.text("ORDEN DE COMPRA AUDITADA", 20, 30);
+            doc.setTextColor(40,40,40); doc.setFontSize(10);
+            doc.text(`PRODUCTO: ${data.p}`, 20, 70);
+            doc.text(`VENDEDOR: ${data.v}`, 20, 80);
+            doc.text(`COMPRADOR: ${document.getElementById('buyer-input').value}`, 20, 90);
+            doc.text(`CERTIFICACIÓN: Nexus AI Verified Asset`, 20, 100);
+            doc.text(`HASH INTEGRIDAD SHA-256: 983e02ab694c3ee5d2002dd096d893414cf431ac`, 20, 210);
+            doc.save(`Orden_Nexus_${data.p.replace(/ /g,"_")}.pdf`);
+        }
+
+        async function startVersion83() {
+            switchTab('c');
+            await triggerGuide("Nexus Marketplace V8.3", "Iniciamos la demo con los 3 vendedores cargados: Siemens (B2B), ABB (B2B) y Logitech (B2C).");
+            await triggerGuide("Proceso de Pago", "Al elegir un producto, el sistema genera la orden y te permite elegir el método de liquidación comercial.", "fa-wallet");
+            initCheckout('Motor Siemens 5HP', 5000, 'Siemens Argentina S.A.');
+        }
+
+        // Auto-ejecución de vista al cargar
+        window.onload = () => switchTab('c');
+    </script>
+</body>
+</html>
